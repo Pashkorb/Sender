@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="org.example.Sender">
+  <grid id="27dc6" binding="contentPane" layout-manager="GridLayoutManager" row-count="13" column-count="8" same-size-horizontally="false" same-size-vertically="false" hgap="1" vgap="1">
+    <margin top="20" left="40" bottom="50" right="100"/>
+    <constraints>
+      <xy x="1" y="20" width="1115" height="1080"/>
+    </constraints>
+    <properties>
+      <autoscrolls value="true"/>
+      <background color="-1773057"/>
+      <doubleBuffered value="false"/>
+      <enabled value="true"/>
+      <font name="Arial Black" size="12" style="0"/>
+      <foreground color="-394241"/>
+      <inheritsPopupMenu value="true"/>
+      <maximumSize width="1115" height="542"/>
+      <opaque value="false"/>
+      <requestFocusEnabled value="false"/>
+      <verifyInputWhenFocusTarget value="false"/>
+    </properties>
+    <border type="line" title-justification="4">
+      <color color="-16777216"/>
+    </border>
+    <children>
+      <component id="47c07" class="javax.swing.JRadioButton" binding="radioButtonSerial">
+        <constraints>
+          <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <selected value="true"/>
+          <text value="COM Port"/>
+        </properties>
+      </component>
+      <component id="c48d1" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Статус принтера"/>
+        </properties>
+      </component>
+      <component id="9159" class="javax.swing.JLabel" binding="statusLabel">
+        <constraints>
+          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Label"/>
+        </properties>
+      </component>
+      <component id="ae4e" class="javax.swing.JComboBox" binding="portComboBox">
+        <constraints>
+          <grid row="0" column="2" row-span="1" col-span="2" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <model/>
+        </properties>
+      </component>
+      <component id="5d38" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="                     Порт  "/>
+        </properties>
+      </component>
+      <component id="54d3c" class="javax.swing.JButton" binding="OpenPort">
+        <constraints>
+          <grid row="0" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Открыть порт"/>
+        </properties>
+      </component>
+      <component id="967cf" class="javax.swing.JButton" binding="closePortButton" default-binding="true">
+        <constraints>
+          <grid row="0" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Закрыть порт"/>
+        </properties>
+      </component>
+      <component id="79b9a" class="javax.swing.JTextField" binding="TextField_IP">
+        <constraints>
+          <grid row="1" column="2" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+        </constraints>
+        <properties>
+          <focusable value="false"/>
+          <horizontalAlignment value="10"/>
+          <text value=""/>
+          <toolTipText value=""/>
+        </properties>
+      </component>
+      <component id="ed254" class="javax.swing.JTextField" binding="textField_PrinterPort">
+        <constraints>
+          <grid row="2" column="2" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+        </constraints>
+        <properties/>
+      </component>
+      <component id="8e4da" class="javax.swing.JTextField" binding="textField_PCPort">
+        <constraints>
+          <grid row="3" column="2" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="-1"/>
+          </grid>
+        </constraints>
+        <properties/>
+      </component>
+      <component id="f529e" class="javax.swing.JRadioButton" binding="radioButtonEthernet">
+        <constraints>
+          <grid row="1" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Ethernet"/>
+        </properties>
+      </component>
+      <component id="1b8f1" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="IP Адрес  "/>
+        </properties>
+      </component>
+      <component id="29ba9" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Порт принтера  "/>
+        </properties>
+      </component>
+      <component id="930c6" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Порт компьютера  "/>
+        </properties>
+      </component>
+      <component id="b926f" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="0" column="0" row-span="3" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <enabled value="true"/>
+          <icon value="images/фастжет (1).jpg"/>
+          <text value="FastJet"/>
+          <verticalAlignment value="0"/>
+          <verticalTextPosition value="0"/>
+        </properties>
+      </component>
+      <component id="8bac7" class="javax.swing.JTextPane" binding="CountTextPanel">
+        <constraints>
+          <grid row="1" column="6" row-span="2" col-span="2" vsize-policy="6" hsize-policy="6" anchor="0" fill="3" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="50"/>
+          </grid>
+        </constraints>
+        <properties>
+          <editable value="false"/>
+          <text value=""/>
+        </properties>
+      </component>
+      <component id="699f1" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="1" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="            КоличествоПечати"/>
+        </properties>
+      </component>
+      <component id="2539c" class="javax.swing.JCheckBox" binding="CountPrint">
+        <constraints>
+          <grid row="2" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Печать по колличеству"/>
+        </properties>
+      </component>
+      <component id="a0b85" class="javax.swing.JLabel" binding="LabelCount">
+        <constraints>
+          <grid row="6" column="0" row-span="2" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Label"/>
+        </properties>
+      </component>
+      <component id="79c1a" class="javax.swing.JButton" binding="selectFolderButton">
+        <constraints>
+          <grid row="3" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Выбор папки"/>
+        </properties>
+      </component>
+      <component id="b8964" class="javax.swing.JButton" binding="кнопкаButton" default-binding="true">
+        <constraints>
+          <grid row="3" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="  Отправить  "/>
+        </properties>
+      </component>
+      <component id="6ea39" class="javax.swing.JButton" binding="StopPrint">
+        <constraints>
+          <grid row="3" column="7" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Стоп печать"/>
+        </properties>
+      </component>
+      <component id="221ef" class="javax.swing.JList" binding="fileList">
+        <constraints>
+          <grid row="4" column="5" row-span="2" col-span="3" vsize-policy="6" hsize-policy="2" anchor="0" fill="3" indent="0" use-parent-layout="false">
+            <preferred-size width="150" height="50"/>
+          </grid>
+        </constraints>
+        <properties/>
+      </component>
+      <component id="f044e" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <text value="Осталось на печать - "/>
+        </properties>
+      </component>
+    </children>
+  </grid>
+</form>
