@@ -22,6 +22,7 @@ public class Sender extends JFrame implements SerialPortDataListener{
 
 
     private JPanel contentPane;
+    private JTable table1;
     private JRadioButton radioButton1;
     private JButton SendButton;//кнопка отправки
     private JButton OpenPort;//кнопка открытия порта
@@ -138,12 +139,7 @@ public class Sender extends JFrame implements SerialPortDataListener{
             }
         });
 
-        removeString.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
 
-            }
-        });
         radioButtonSerial.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -160,22 +156,28 @@ public class Sender extends JFrame implements SerialPortDataListener{
                 }
             }
         });
+        removeString.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                removeString();
+            }
+        });
         SaveMess.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                saveMess();
             }
         });
         AddAllStrings.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                addAllStrings();
             }
         });
         AddString.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                addString();
             }
         });
         radioButtonSerial.addActionListener(new ActionListener() {
@@ -190,6 +192,105 @@ public class Sender extends JFrame implements SerialPortDataListener{
                 editView(false);
             }
         });
+    }
+
+    private void saveMess() {
+        if (TotalMessage.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Нет данных для сохранения!", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Сохранить сообщение");
+        int userSelection = fileChooser.showSaveDialog(Sender.this);
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            File fileToSave = fileChooser.getSelectedFile();
+            String filePath = fileToSave.getAbsolutePath();
+            if (!filePath.toLowerCase().endsWith(".txt")) {
+                fileToSave = new File(filePath + ".txt"); // Добавляем расширение .txt, если его нет
+            }
+            try {
+                Files.write(fileToSave.toPath(), TotalMessage.getText().getBytes(StandardCharsets.UTF_8));
+                JOptionPane.showMessageDialog(null, "Сообщение успешно сохранено!", "Успех", JOptionPane.INFORMATION_MESSAGE);
+                if (selectedFolderPath != null) {
+                    loadFilesFromFolder(selectedFolderPath); // Обновляем список файлов
+                }
+            } catch (Exception ex) {
+                logger.log(Level.SEVERE, "Ошибка при сохранении файла", ex);
+                JOptionPane.showMessageDialog(null, "Ошибка при сохранении файла: " + ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+
+    }
+
+    private void addAllStrings() {
+        if (fileList.getSelectedIndex() == -1) {
+            JOptionPane.showMessageDialog(null, "Выберите файл из списка!", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String selectedFilePath = fileListModel.getElementAt(fileList.getSelectedIndex());
+        File file = new File(selectedFilePath);
+
+        // Проверяем, существует ли файл
+        if (!file.exists()) {
+            JOptionPane.showMessageDialog(null, "Файл не найден: " + selectedFilePath, "Ошибка", JOptionPane.ERROR_MESSAGE);
+            fileListModel.remove(fileList.getSelectedIndex()); // Удаляем файл из списка, так как он больше не существует
+            return;
+        }
+
+        try {
+            List<String> lines = Files.readAllLines(Paths.get(selectedFilePath), StandardCharsets.UTF_8);
+            for (String line : lines) {
+                if (!TotalMessage.getText().contains(line)) { // Проверяем, что строка еще не добавлена
+                    TotalMessage.append(line + "\n"); // Добавляем строку в итоговое сообщение
+                }
+            }
+        } catch (Exception ex) {
+            logger.log(Level.SEVERE, "Ошибка при чтении файла", ex);
+            JOptionPane.showMessageDialog(null, "Ошибка при чтении файла: " + ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+        }
+    
+    }
+
+    private void removeString() {
+        String currentText = TotalMessage.getText();
+        if (currentText.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Нет строк для удаления!", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String[] lines = currentText.split("\n");
+        if (lines.length > 0) {
+            StringBuilder newText = new StringBuilder();
+            for (int i = 0; i < lines.length - 1; i++) { // Пропускаем последнюю строку
+                newText.append(lines[i]).append("\n"); // Добавляем строку и символ новой строки
+            }
+            TotalMessage.setText(newText.toString()); // Обновляем текст
+        }
+    }
+
+
+
+    private void addString() {
+        if (fileList.getSelectedIndex() == -1) {
+            JOptionPane.showMessageDialog(null, "Выберите файл из списка!", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String selectedFilePath = fileListModel.getElementAt(fileList.getSelectedIndex());
+        try {
+            List<String> lines = Files.readAllLines(Paths.get(selectedFilePath), StandardCharsets.UTF_8);
+            for (String line : lines) {
+                if (!TotalMessage.getText().contains(line)) { // Проверяем, что строка еще не добавлена
+                    TotalMessage.append(line + "\n"); // Добавляем строку в итоговое сообщение
+                    break; // Добавляем только первую неиспользованную строку
+                }
+            }
+        } catch (Exception ex) {
+            logger.log(Level.SEVERE, "Ошибка при чтении файла", ex);
+            JOptionPane.showMessageDialog(null, "Ошибка при чтении файла: " + ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void initializeComponents() {
