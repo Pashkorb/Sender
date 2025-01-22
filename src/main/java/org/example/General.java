@@ -1,26 +1,313 @@
 package org.example;
 
-import javax.swing.*;
+import org.example.Service.PrinterManager;
+import org.example.Service.TemplateManager;
+import org.example.Service.TemplateSelectionDialog;
 
-public class General {
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class General extends JFrame{
     private JPanel panel1;
-    private JComboBox comboBox1;
-    private JTextField textField1;
-    private JTextField textField2;
-    private JTextField textField3;
-    private JCheckBox печатьПоКоличествуCheckBox;
-    private JTextField textField4;
-    private JButton добавитьПолеButton;
-    private JButton удалитьПолеButton;
-    private JButton обновитьШаблонПечатиButton;
-    private JButton стопПечатьButton;
-    private JButton отправитьНаПечатьButton;
-    private JButton выборШаблонаИзПапкиButton;
-    private JTextField textField5;
-    private JButton удалитьПолеButton1;
-    private JButton добавитьПолеButton1;
-    private JTextField textField6;
-    private JPasswordField passwordField1;
-    private JTextField textField7;
-    private JTextField textField8;
+    private JComboBox comboBox_Printers;
+    private JTextField textFieldX1;
+    private JTextField textFieldX2;
+    private JTextField textFieldX0;
+    private JCheckBox CheckBox_CountPrint;
+    private JTextField textFieldCountPrint;
+    private JButton ButtonAddField;
+    private JButton ButtonRemoveField;
+    private JButton ButtonUppdateDateSample;
+    private JButton ButtonStopPrinter;
+    private JButton ButtonSendDataForPrinter;
+    private JButton ButtonSelectSample;
+    private JTextField textFieldNameFieldX0;
+    private JButton ButtonRemoveFieldInSample;
+    private JButton ButtonAddFieldInSample;
+    private JTextField textFieldTextX0;
+    private JTextField textFieldTextX2;
+    private JTextField textFieldTextX3;
+    private JTextField textFieldTextX1;
+    private JButton ButtonSaveSample;
+    private JButton button1;
+    private JButton button2;
+    private JButton button3;
+    private JButton button4;
+    private JPasswordField textFieldPrintedCount;
+    private JTextField textFieldRemaindedPrinting;
+    private JLabel LabelNameFieldX0;
+    private JLabel LabelNameFieldX1;
+    private JLabel LabelNameFieldX2;
+    private JLabel LabelNameFieldX3;
+    private JTextField textFieldNameFieldX1;
+    private JTextField textFieldNameFieldX2;
+    private JTextField textFieldNameFieldX3;
+
+    private JPanel Panel1;
+    private JPanel Panel2;
+    private JPanel Panel3;
+    private JPanel Panel4;
+    private JPanel Panel5;
+    private JPanel Panel6;
+    private JPanel Panel7;
+    private JPanel Panel8;
+    private JPanel Panel9;
+    private JPanel Panel10;
+    private JPanel Panel11;
+    private JPanel Panel12;
+    private JPanel Panel13;
+    private JPanel Panel14;
+    private JPanel Panel15;
+    private JPanel Panel16;
+    private JPanel Panel17;
+    private JPanel Panel18;
+    private JPanel Panel19;
+    private JPanel Panel20;
+    private JPanel Panel21;
+    private JPanel Panel22;
+    private JPanel Panel23;
+    private JTextField textFieldX3;
+    private JLabel LabelX3;
+    private JLabel LabelX2;
+    private JLabel LabelX1;
+    private JLabel LabelX0;
+
+    public General() {
+
+        setContentPane(panel1);
+        setTitle("General");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        pack();
+        setVisible(true);
+
+            // Присваиваем имена текстовым полям
+            textFieldTextX0.setName("textFieldTextX0");
+            textFieldTextX1.setName("textFieldTextX1");
+            textFieldTextX2.setName("textFieldTextX2");
+            textFieldTextX3.setName("textFieldTextX3");
+
+
+            if (panel1 == null) {
+                System.out.println("Основная панель (panel1) не инициализирована!");
+            } else {
+                System.out.println("Основная панель (panel1) инициализирована.");
+            }
+
+            if (Panel1 == null) {
+                System.out.println("Panel1 не инициализирована!");
+            } else {
+                System.out.println("Panel1 инициализирована.");
+            }
+
+            // Аналогично для остальных панелей...
+
+        // Обработчик для кнопки "Сохранить шаблон"
+        ButtonSaveSample.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                saveTemplate();
+            }
+        });
+
+        // Обработчик для кнопки "Выбрать шаблон"
+        ButtonSelectSample.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                selectTemplate();
+            }
+        });
+
+        ButtonSendDataForPrinter.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Проверяем, открыто ли соединение
+                if (!PrinterManager.isConnectionOpen()) {
+                    JOptionPane.showMessageDialog(null, "Соединение с принтером не установлено!", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // Собираем данные из текстовых полей
+
+                List<String> printTasks = new ArrayList<>();
+                if (!textFieldX0.getText().isEmpty()) {
+                    printTasks.add("X0: " + textFieldX0.getText());
+                }
+                if (!textFieldX1.getText().isEmpty()) {
+                    printTasks.add("X1: " + textFieldX1.getText());
+                }
+                if (!textFieldX2.getText().isEmpty()) {
+                    printTasks.add("X2: " + textFieldX2.getText());
+                }
+                if (!textFieldX3.getText().isEmpty()) {
+                    printTasks.add("X3: " + textFieldX3.getText());
+                }
+
+                // Проверяем, есть ли данные для отправки
+                if (printTasks.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Нет данных для отправки!", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                try {
+                    // Подготавливаем команду для печати
+                    Coder coder = new Coder();
+                    PrinterCommand command = coder.preparePrintCommand(printTasks, "02"); // Используем код функции "02"
+
+                    // Подготавливаем команду для отправки
+                    String preparedCommand = coder.prepareCommandForSending(command);
+                    System.out.println("[INFO] Подготовленная команда для отправки: " + preparedCommand);
+
+                    // Отправляем данные через PrinterManager
+                    byte[] data = preparedCommand.getBytes(StandardCharsets.US_ASCII);
+                    PrinterManager.sendData(data);
+
+                    JOptionPane.showMessageDialog(null, "Данные успешно отправлены!", "Успех", JOptionPane.INFORMATION_MESSAGE);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Ошибка при подготовке или отправке данных: " + ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+                    ex.printStackTrace();
+                }
+            }
+        });
+        button3.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Создаем экземпляр формы Setting
+                Setting fSetting = new Setting();
+
+                // Заменяем содержимое текущего окна на панель из Setting
+                setContent(fSetting.panel1);
+            }
+        });
+    }
+
+    public void setContent(JPanel newContent) {
+        getContentPane().removeAll(); // Удаляем текущее содержимое
+        getContentPane().add(newContent); // Добавляем новое содержимое
+        revalidate(); // Обновляем макет
+        repaint(); // Перерисовываем окно
+    }
+    // Метод для сохранения шаблона
+    private void saveTemplate() {
+        String templateName = JOptionPane.showInputDialog("Введите название шаблона:");
+        if (templateName == null || templateName.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Название шаблона не может быть пустым.", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Собираем данные полей с именами и номерами
+        Map<String, Map<String, String>> fieldsData = new HashMap<>();
+        fieldsData.put("0", Map.of(
+                "text", textFieldTextX0.getText(),
+                "name", textFieldNameFieldX0.getText()
+        ));
+        fieldsData.put("1", Map.of(
+                "text", textFieldTextX1.getText(),
+                "name", textFieldNameFieldX1.getText()
+        ));
+        fieldsData.put("2", Map.of(
+                "text", textFieldTextX2.getText(),
+                "name", textFieldNameFieldX2.getText()
+        ));
+        fieldsData.put("3", Map.of(
+                "text", textFieldTextX3.getText(),
+                "name", textFieldNameFieldX3.getText()
+        ));
+
+        try {
+            TemplateManager.saveTemplateWithNames(templateName, fieldsData);
+            JOptionPane.showMessageDialog(null, "Шаблон успешно сохранён!", "Успех", JOptionPane.INFORMATION_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Ошибка при сохранении шаблона: " + e.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+
+
+    public void loadTemplateData(String templateName) {
+        try {
+            Map<String, Map<String, String>> fields = TemplateManager.loadTemplateWithFieldNames(templateName);
+
+            // Сбрасываем поля
+            resetFields();
+
+            for (Map.Entry<String, Map<String, String>> entry : fields.entrySet()) {
+                String number = entry.getKey(); // "0", "1" и т.д.
+                Map<String, String> data = entry.getValue();
+
+                switch (number) {
+                    case "0":
+                        LabelX0.setText("X0: " + data.get("name"));
+                        textFieldX0.setText(data.get("text"));
+                        textFieldNameFieldX0.setText(data.get("name"));
+                        break;
+                    case "1":
+                        LabelX1.setText("X1: " + data.get("name"));
+                        textFieldX1.setText(data.get("text"));
+                        textFieldNameFieldX1.setText(data.get("name"));
+                        break;
+                    case "2":
+                        LabelX2.setText("X2: " + data.get("name"));
+                        textFieldX2.setText(data.get("text"));
+                        textFieldNameFieldX2.setText(data.get("name"));
+                        break;
+                    case "3":
+                        LabelX3.setText("X3: " + data.get("name"));
+                        textFieldX3.setText(data.get("text"));
+                        textFieldNameFieldX3.setText(data.get("name"));
+                        break;
+                }
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Ошибка загрузки: " + e.getMessage());
+        }
+    }
+
+    private void resetFields() {
+        // Сброс всех полей и меток
+        LabelX0.setText("X0:");
+        LabelX1.setText("X1:");
+        LabelX2.setText("X2:");
+        LabelX3.setText("X3:");
+
+        textFieldX0.setText("");
+        textFieldX1.setText("");
+        textFieldX2.setText("");
+        textFieldX3.setText("");
+
+        textFieldNameFieldX0.setText("");
+        textFieldNameFieldX1.setText("");
+        textFieldNameFieldX2.setText("");
+        textFieldNameFieldX3.setText("");
+    }
+
+    private void selectTemplate() {
+        System.out.println("[DEBUG] Открытие окна выбора шаблона...");
+
+        // Открываем окно выбора шаблона
+        TemplateSelectionDialog dialog = new TemplateSelectionDialog(this);
+        dialog.setVisible(true);
+
+        System.out.println("[DEBUG] Окно выбора шаблона закрыто.");
+    }
+
+
+
+
+
+
+    public static void main(String[] args) {
+        // Создаем экземпляр окна
+        General frame = new General();
+
+        // Делаем окно видимым
+        frame.setVisible(true);
+    }
+
+
 }
