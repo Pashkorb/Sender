@@ -1,6 +1,7 @@
 package org.example.Service;
 
 import org.example.General;
+import org.example.MainFrame;
 import org.example.Service.TemplateManager;
 
 import javax.swing.*;
@@ -15,9 +16,9 @@ public class TemplateSelectionDialog extends JDialog {
     private JButton buttonSelect;
     private General parentFrame;
 
-    public TemplateSelectionDialog(General parent) {
+    public TemplateSelectionDialog(MainFrame parent) {
         super(parent, "Выбор шаблона", true);
-        this.parentFrame = parent;
+        this.parentFrame = parent.getGeneralPanel();
 
         // Создаем панель для компонентов
         JPanel panel = new JPanel();

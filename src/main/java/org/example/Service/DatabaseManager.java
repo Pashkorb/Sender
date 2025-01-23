@@ -1,12 +1,11 @@
 package org.example.Service;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -68,9 +67,11 @@ public class DatabaseManager {
         if (dbFilePath == null) {
             throw new SQLException("Путь к файлу базы данных не инициализирован.");
         }
-        return DriverManager.getConnection("jdbc:sqlite:" + dbFilePath.toString());
+        // Добавляем параметр busy_timeout
+        return DriverManager.getConnection(
+                "jdbc:sqlite:file:" + dbFilePath.toString() + "?busy_timeout=1000"
+        );
     }
-
     private void initializeDatabase() {
         try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + dbFilePath.toString())) {
             Statement statement = connection.createStatement();
@@ -84,6 +85,19 @@ public class DatabaseManager {
                     "Пароль TEXT NOT NULL, " +
                     "Доступ BOOLEAN NOT NULL DEFAULT TRUE)");
             log("Таблица 'Пользователи' создана или уже существует.");
+// Проверяем и создаём администратора
+            if (isFirstRun(connection)) {
+                createAdminUser(connection);
+            }
+            // Создаём таблицу ЖурналАвторизаций
+            statement.execute("CREATE TABLE IF NOT EXISTS ЖурналАвторизаций (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "Пользователь_id INTEGER NOT NULL, " +
+                    "ТипСобытия TEXT NOT NULL CHECK(ТипСобытия IN ('Вход', 'Выход')), " +
+                    "ДатаВремя TEXT NOT NULL, " +
+                    "FOREIGN KEY (Пользователь_id) REFERENCES Пользователи(id))");
+            log("Таблица 'ЖурналАвторизаций' создана или уже существует.");
+
 
             // Создаём таблицу Принтеры
             statement.execute("CREATE TABLE IF NOT EXISTS Принтеры (" +
@@ -122,6 +136,30 @@ public class DatabaseManager {
         } catch (Exception e) {
             log("Ошибка при инициализации базы данных: " + e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    private boolean isFirstRun(Connection connection) throws SQLException {
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM Пользователи")) {
+            return rs.getInt(1) == 0;
+        }
+    }
+
+    private void createAdminUser(Connection connection) {
+        String sql = "INSERT INTO Пользователи (Фио, Роль, Логин, Пароль) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) { // Используем try-with-resources
+            String password = "@MirMarking_Prog";
+            String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+
+            pstmt.setString(1, "");
+            pstmt.setString(2, "Admin");
+            pstmt.setString(3, "admin");
+            pstmt.setString(4, hashedPassword);
+            pstmt.executeUpdate();
+            log("Администратор создан");
+        } catch (Exception e) {
+            log("Ошибка создания администратора: " + e.getMessage());
         }
     }
 

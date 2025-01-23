@@ -2,7 +2,7 @@ package org.example;
 
 import javax.swing.*;
 
-public class elper {
+public class Helper extends JFrame{
     private JPanel panel1;
     private JTextField textField1;
     private JComboBox comboBox1;

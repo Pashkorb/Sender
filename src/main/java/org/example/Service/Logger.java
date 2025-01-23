@@ -13,16 +13,13 @@ public class Logger {
 
     private Logger() {
         try {
-            // Получаем путь к папке APPDATA
             String userHome = System.getProperty("user.home");
             Path appDataPath = Paths.get(userHome, "AppData", "Roaming", "FastMarking");
 
-            // Создаём папку, если она не существует
             if (!Files.exists(appDataPath)) {
                 Files.createDirectories(appDataPath);
             }
 
-            // Создаём файл логов
             logFilePath = appDataPath.resolve("ЛОГИ.txt");
             if (!Files.exists(logFilePath)) {
                 Files.createFile(logFilePath);
@@ -40,21 +37,27 @@ public class Logger {
         return instance;
     }
 
-    public void log(String message) {
-        if (logFilePath == null) {
-            System.err.println("Ошибка: путь к файлу логов не инициализирован.");
-            return;
-        }
+    // Общий метод для логирования
+    public  void log(String message) {
         try {
-            // Добавляем временную метку к сообщению
             String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             String logMessage = "[" + timestamp + "] " + message + "\n";
-
-            // Записываем сообщение в файл
             Files.write(logFilePath, logMessage.getBytes(), StandardOpenOption.APPEND);
         } catch (Exception e) {
-            System.err.println("Ошибка при записи в файл логов: " + e.getMessage());
-            e.printStackTrace();
+            System.err.println("Ошибка записи в лог: " + e.getMessage());
         }
+    }
+
+    // Специализированные методы
+    public void logLogin(String username) {
+        log("Вход в систему: Пользователь '" + username + "'");
+    }
+
+    public void logLogout(String username) {
+        log("Выход из системы: Пользователь '" + username + "'");
+    }
+
+    public void logError(String error) {
+        log("ОШИБКА: " + error);
     }
 }

@@ -7,47 +7,47 @@ import org.example.Service.LicenseManager;
 import javax.swing.*;
 import java.time.LocalDate;
 
+import org.example.Service.*;
+import javax.swing.*;
+import java.time.LocalDate;
+
 public class Main {
-    public static void main(String[] args) {
 
 
-        System.out.println(LicenseManager.generateLicenseKey(LocalDate.of(2025, 12, 31)));
-        try {
-            // Проверяем лицензию
-            String licenseKey = LicenseManager.loadLicense();
-            if (licenseKey == null || !LicenseManager.validateLicenseKey(licenseKey)) {
-                // Лицензия недействительна, запрашиваем новый ключ
-                LicenseInputDialog dialog = new LicenseInputDialog(null);
-                dialog.setVisible(true);
+        public static void main(String[] args) {
+            System.out.println("[MAIN] Запуск приложения");
 
-                if (dialog.isLicenseValid()) {
-                    // Сохраняем новый ключ
-                    LicenseManager.saveLicense(dialog.getLicenseKey());
-                } else {
-                    JOptionPane.showMessageDialog(null, "Лицензия не активирована. Программа завершена.", "Ошибка", JOptionPane.ERROR_MESSAGE);
-                    System.exit(0);
+            try {
+                System.out.println("[MAIN] Проверка лицензии...");
+                String licenseKey = LicenseManager.loadLicense();
+
+                if (licenseKey == null || !LicenseManager.validateLicenseKey(licenseKey)) {
+                    System.out.println("[MAIN] Лицензия недействительна");
+                    LicenseInputDialog dialog = new LicenseInputDialog(null);
+                    dialog.setVisible(true); // Модальный диалог
+
+                    if (dialog.isLicenseValid()) {
+                        System.out.println("[MAIN] Лицензия активирована");
+                        LicenseManager.saveLicense(dialog.getLicenseKey());
+                    } else {
+                        System.out.println("[MAIN] Лицензия не активирована. Выход");
+                        JOptionPane.showMessageDialog(null, "Лицензия не активирована. Программа завершена.", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                        System.exit(0);
+                    }
                 }
+
+                System.out.println("[MAIN] Создание формы входа...");
+                SwingUtilities.invokeLater(() -> {
+                    Enter enterForm = new Enter();
+                    enterForm.setVisible(true);
+                    System.out.println("[MAIN] Форма входа закрыта");
+                });
+
+            } catch (Exception e) {
+                System.out.println("[MAIN] КРИТИЧЕСКАЯ ОШИБКА: " + e.getMessage());
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Ошибка при запуске: " + e.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+                System.exit(1);
             }
-
-            // Лицензия действительна, запускаем программу
-            System.out.println("Лицензия действительна. Программа запущена.");
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Ошибка при проверке лицензии: " + e.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
-            System.exit(1);
         }
-
-        // Инициализация базы данных и логов
-        DatabaseManager dbManager = DatabaseManager.getInstance();
-
-        // Дополнительные действия при запуске
-        System.out.println("Программа запущена. Проверьте папку APPDATA и файл логов.");
-
-
-
-        // Создаем и отображаем форму
-        General form = new General();
-        form.setVisible(true);
-
     }
-}

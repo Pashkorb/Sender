@@ -1,20 +1,21 @@
 package org.example;
 
-import org.example.Service.PrinterManager;
-import org.example.Service.TemplateManager;
-import org.example.Service.TemplateSelectionDialog;
+import org.example.Service.*;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class General extends JFrame{
-    private JPanel panel1;
+public class General extends JPanel{
     private JComboBox comboBox_Printers;
     private JTextField textFieldX1;
     private JTextField textFieldX2;
@@ -78,12 +79,17 @@ public class General extends JFrame{
     private JLabel LabelX1;
     private JLabel LabelX0;
 
-    public General() {
+    private JPanel mainPanel; // Главная панель из дизайнера
+    private MainFrame parent;
 
-        setContentPane(panel1);
-        setTitle("General");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        pack();
+    public General(MainFrame parent) {
+        this.parent = parent;
+        add(mainPanel); // Добавляем панель из дизайнера
+//
+//        setContentPane(panel1);
+//        setTitle("General");
+//        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        pack();
         setVisible(true);
 
             // Присваиваем имена текстовым полям
@@ -93,13 +99,13 @@ public class General extends JFrame{
             textFieldTextX3.setName("textFieldTextX3");
 
 
-            if (panel1 == null) {
+            if (mainPanel == null) {
                 System.out.println("Основная панель (panel1) не инициализирована!");
             } else {
                 System.out.println("Основная панель (panel1) инициализирована.");
             }
 
-            if (Panel1 == null) {
+            if (mainPanel == null) {
                 System.out.println("Panel1 не инициализирована!");
             } else {
                 System.out.println("Panel1 инициализирована.");
@@ -136,16 +142,16 @@ public class General extends JFrame{
 
                 List<String> printTasks = new ArrayList<>();
                 if (!textFieldX0.getText().isEmpty()) {
-                    printTasks.add("X0: " + textFieldX0.getText());
+                    printTasks.add(textFieldX0.getText());
                 }
                 if (!textFieldX1.getText().isEmpty()) {
-                    printTasks.add("X1: " + textFieldX1.getText());
+                    printTasks.add(textFieldX1.getText());
                 }
                 if (!textFieldX2.getText().isEmpty()) {
-                    printTasks.add("X2: " + textFieldX2.getText());
+                    printTasks.add(textFieldX2.getText());
                 }
                 if (!textFieldX3.getText().isEmpty()) {
-                    printTasks.add("X3: " + textFieldX3.getText());
+                    printTasks.add(textFieldX3.getText());
                 }
 
                 // Проверяем, есть ли данные для отправки
@@ -177,21 +183,22 @@ public class General extends JFrame{
         button3.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // Создаем экземпляр формы Setting
-                Setting fSetting = new Setting();
+                parent.showSettings(); // Переключаемся на панель настроек
 
-                // Заменяем содержимое текущего окна на панель из Setting
-                setContent(fSetting.panel1);
+            }
+        });
+
+
+        button2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                parent.showReport(); // Переключаемся на панель настроек
+
             }
         });
     }
 
-    public void setContent(JPanel newContent) {
-        getContentPane().removeAll(); // Удаляем текущее содержимое
-        getContentPane().add(newContent); // Добавляем новое содержимое
-        revalidate(); // Обновляем макет
-        repaint(); // Перерисовываем окно
-    }
+
     // Метод для сохранения шаблона
     private void saveTemplate() {
         String templateName = JOptionPane.showInputDialog("Введите название шаблона:");
@@ -290,7 +297,7 @@ public class General extends JFrame{
         System.out.println("[DEBUG] Открытие окна выбора шаблона...");
 
         // Открываем окно выбора шаблона
-        TemplateSelectionDialog dialog = new TemplateSelectionDialog(this);
+        TemplateSelectionDialog dialog = new TemplateSelectionDialog(parent);
         dialog.setVisible(true);
 
         System.out.println("[DEBUG] Окно выбора шаблона закрыто.");
@@ -303,10 +310,10 @@ public class General extends JFrame{
 
     public static void main(String[] args) {
         // Создаем экземпляр окна
-        General frame = new General();
+      //  General frame = new General();
 
         // Делаем окно видимым
-        frame.setVisible(true);
+        //frame.setVisible(true);
     }
 
 
