@@ -43,13 +43,12 @@ public class General extends JPanel implements PrinterDataListener {
     private JButton button4;
     private JPasswordField textFieldPrintedCount;
     private JTextField textFieldRemaindedPrinting;
-    private JLabel LabelNameFieldX0;
-    private JLabel LabelNameFieldX1;
-    private JLabel LabelNameFieldX2;
-    private JLabel LabelNameFieldX3;
     private JTextField textFieldNameFieldX1;
     private JTextField textFieldNameFieldX2;
     private JTextField textFieldNameFieldX3;
+
+    private int visibleFieldsCount = 3; // Начальное количество видимых полей
+
 
     private JPanel Panel1;
     private JPanel Panel2;
@@ -63,14 +62,7 @@ public class General extends JPanel implements PrinterDataListener {
     private JPanel Panel10;
     private JPanel Panel11;
     private JPanel Panel12;
-    private JPanel Panel13;
-    private JPanel Panel14;
     private JPanel Panel15;
-    private JPanel Panel16;
-    private JPanel Panel17;
-    private JPanel Panel18;
-    private JPanel Panel19;
-    private JPanel Panel20;
     private JPanel Panel21;
     private JPanel Panel22;
     private int remainingCopies = 0;
@@ -82,6 +74,22 @@ public class General extends JPanel implements PrinterDataListener {
     private JLabel LabelX0;
 
     private JPanel mainPanel; // Главная панель из дизайнера
+    private JTextField textFieldX5;
+    private JLabel LabelX5;
+    private JTextField textFieldTextX4;
+
+    private JTextField textFieldX4;
+
+    private JLabel LabelX4;
+    private JTextField textFieldTextX5;
+    private JTextField textFieldNameFieldX4;
+    private JTextField textFieldNameFieldX5;
+    private JPanel JPanelX3;
+    private JPanel JPanelX4;
+    private JPanel JPanelX5;
+    private JPanel Panel13;
+    private JLabel LabelNameFieldX0;
+    private JPanel Panel14;
     private MainFrame parent;
 
     public General(MainFrame parent) {
@@ -100,7 +108,8 @@ public class General extends JPanel implements PrinterDataListener {
             textFieldTextX2.setName("textFieldTextX2");
             textFieldTextX3.setName("textFieldTextX3");
 
-
+        setFieldsVisibility();
+        
             if (mainPanel == null) {
                 System.out.println("Основная панель (panel1) не инициализирована!");
             } else {
@@ -159,6 +168,13 @@ public class General extends JPanel implements PrinterDataListener {
                 if (!textFieldX3.getText().isEmpty()) {
                     printTasks.add(textFieldX3.getText());
                 }
+                if (!textFieldX4.getText().isEmpty()) {
+                    printTasks.add(textFieldX4.getText());
+                }
+                if (!textFieldX5.getText().isEmpty()) {
+                    printTasks.add(textFieldX5.getText());
+                }
+
 
                 // Проверяем, есть ли данные для отправки
                 if (printTasks.isEmpty()) {
@@ -212,6 +228,48 @@ public class General extends JPanel implements PrinterDataListener {
                 PrinterManager.sendStopCommand();
             }
         });
+        // Обработчики для кнопок добавления/удаления полей
+        ButtonAddField.addActionListener(e -> {
+            if (visibleFieldsCount < 6) { // Максимум 6 полей (X0-X5)
+                visibleFieldsCount++;
+                setFieldsVisibility();
+            }
+        });
+
+        ButtonRemoveField.addActionListener(e -> {
+            if (visibleFieldsCount > 3) { // Минимум 3 поля
+                visibleFieldsCount--;
+                setFieldsVisibility();
+            }
+        });
+    }
+
+    private void setFieldsVisibility() {
+        // X0, X1, X2 всегда видимы
+        boolean x3Visible = visibleFieldsCount >= 4;
+        boolean x4Visible = visibleFieldsCount >= 5;
+        boolean x5Visible = visibleFieldsCount >= 6;
+
+        JPanelX3.setVisible(x3Visible);
+        textFieldX3.setVisible(x3Visible);
+        LabelX3.setVisible(x3Visible);
+        textFieldNameFieldX3.setVisible(x3Visible);
+        textFieldTextX3.setVisible(x3Visible);
+
+        JPanelX4.setVisible(x4Visible);
+        textFieldX4.setVisible(x4Visible);
+        LabelX4.setVisible(x4Visible);
+        textFieldNameFieldX4.setVisible(x4Visible);
+        textFieldTextX4.setVisible(x4Visible);
+
+        JPanelX5.setVisible(x5Visible);
+        textFieldX5.setVisible(x5Visible);
+        LabelX5.setVisible(x5Visible);
+        textFieldNameFieldX5.setVisible(x5Visible);
+        textFieldTextX5.setVisible(x5Visible);
+
+        mainPanel.revalidate();
+        mainPanel.repaint();
     }
 
     @Override
@@ -253,22 +311,46 @@ public class General extends JPanel implements PrinterDataListener {
 
         // Собираем данные полей с именами и номерами
         Map<String, Map<String, String>> fieldsData = new HashMap<>();
-        fieldsData.put("0", Map.of(
-                "text", textFieldTextX0.getText(),
-                "name", textFieldNameFieldX0.getText()
-        ));
-        fieldsData.put("1", Map.of(
-                "text", textFieldTextX1.getText(),
-                "name", textFieldNameFieldX1.getText()
-        ));
-        fieldsData.put("2", Map.of(
-                "text", textFieldTextX2.getText(),
-                "name", textFieldNameFieldX2.getText()
-        ));
-        fieldsData.put("3", Map.of(
-                "text", textFieldTextX3.getText(),
-                "name", textFieldNameFieldX3.getText()
-        ));
+        for (int i = 0; i < visibleFieldsCount; i++) {
+            switch (i) {
+                case 0:
+                    fieldsData.put("0", Map.of(
+                            "text", textFieldTextX0.getText(),
+                            "name", textFieldNameFieldX0.getText()
+                    ));
+                    break;
+                case 1:
+                    fieldsData.put("1", Map.of(
+                            "text", textFieldTextX1.getText(),
+                            "name", textFieldNameFieldX1.getText()
+                    ));
+                    break;
+                case 2:
+                    fieldsData.put("2", Map.of(
+                            "text", textFieldTextX2.getText(),
+                            "name", textFieldNameFieldX2.getText()
+                    ));
+                    break;
+                case 3:
+                    fieldsData.put("3", Map.of(
+                            "text", textFieldTextX3.getText(),
+                            "name", textFieldNameFieldX3.getText()
+                    ));
+                    break;
+                case 4:
+                    fieldsData.put("4", Map.of(
+                            "text", textFieldTextX4.getText(),
+                            "name", textFieldNameFieldX4.getText()
+                    ));
+                    break;
+                case 5:
+                    fieldsData.put("5", Map.of(
+                            "text", textFieldTextX5.getText(),
+                            "name", textFieldNameFieldX5.getText()
+                    ));
+                    break;
+            }
+        }
 
         try {
             TemplateManager.saveTemplateWithNames(templateName, fieldsData);
@@ -283,15 +365,32 @@ public class General extends JPanel implements PrinterDataListener {
     public void loadTemplateData(String templateName) {
         try {
             Map<String, Map<String, String>> fields = TemplateManager.loadTemplateWithFieldNames(templateName);
-
-            // Сбрасываем поля
             resetFields();
 
+            int maxFieldNumber = -1;
+
+            // Находим максимальный номер поля в шаблоне
+            for (String key : fields.keySet()) {
+                try {
+                    int num = Integer.parseInt(key);
+                    if(num > maxFieldNumber) maxFieldNumber = num;
+                } catch (NumberFormatException ex) {
+                    // Пропускаем некорректные ключи
+                }
+            }
+
+            // Устанавливаем количество видимых полей
+            visibleFieldsCount = (maxFieldNumber == -1) ? 3 : maxFieldNumber + 1;
+
+            // Ограничиваем максимальное количество полей
+            if(visibleFieldsCount > 6) visibleFieldsCount = 6;
+
+            // Загружаем данные для каждого поля
             for (Map.Entry<String, Map<String, String>> entry : fields.entrySet()) {
-                String number = entry.getKey(); // "0", "1" и т.д.
+                String number = entry.getKey();
                 Map<String, String> data = entry.getValue();
 
-                switch (number) {
+                switch(number) {
                     case "0":
                         LabelX0.setText("X0: " + data.get("name"));
                         textFieldX0.setText(data.get("text"));
@@ -312,10 +411,23 @@ public class General extends JPanel implements PrinterDataListener {
                         textFieldX3.setText(data.get("text"));
                         textFieldNameFieldX3.setText(data.get("name"));
                         break;
+                    case "4":
+                        LabelX4.setText("X4: " + data.get("name"));
+                        textFieldX4.setText(data.get("text"));
+                        textFieldNameFieldX4.setText(data.get("name"));
+                        break;
+                    case "5":
+                        LabelX5.setText("X5: " + data.get("name"));
+                        textFieldX5.setText(data.get("text"));
+                        textFieldNameFieldX5.setText(data.get("name"));
+                        break;
                 }
             }
+
+            setFieldsVisibility(); // Обновляем видимость полей
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Ошибка загрузки: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
