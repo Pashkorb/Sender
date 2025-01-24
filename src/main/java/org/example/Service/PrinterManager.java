@@ -5,116 +5,147 @@ import com.fazecast.jSerialComm.SerialPort;
 import java.util.HashMap;
 import java.util.Map;
 
+// PrinterManager.java
+import com.fazecast.jSerialComm.*;
+import org.example.Coder;
+import org.example.Model.PrinterDataListener;
+import org.example.PrinterCommand;
+
+import java.io.*;
+import java.net.*;
+import java.util.*;
+import java.nio.charset.StandardCharsets;
+
 public class PrinterManager {
-    // Статические переменные для хранения настроек принтера
-    private static String printerName;
-    private static String printerSeries;
-    private static int characterCount;
-    private static int workingHours;
+    private static SerialPort serialPort;
+    private static Socket ethernetSocket;
+    private static BufferedReader ethernetReader;
+    private static List<PrinterDataListener> listeners = new ArrayList<>();
+    private static Thread ethernetReadThread;
+    private static boolean running = true;
 
-    private static SerialPort serialPort; // Для работы с COM-портом
-    private static String ipAddress; // Для работы с Ethernet
-    private static int printerPort; // Порт принтера (для Ethernet)
-    private static boolean isSerialConnection = true; // По умолчанию используется Serial
-
-    // Логирование
-    private static void log(String message) {
-        System.out.println("[PrinterManager] " + message);
+    public static void addDataListener(PrinterDataListener listener) {
+        listeners.add(listener);
     }
 
-    // Установка настроек принтера
-    public static void setPrinterSettings(String name, String series, int chars, int hours) {
-        printerName = name;
-        printerSeries = series;
-        characterCount = chars;
-        workingHours = hours;
-        log("Настройки принтера обновлены: " + name + ", " + series + ", " + chars + " символов, " + hours + " часов");
+    public static void removeDataListener(PrinterDataListener listener) {
+        listeners.remove(listener);
     }
 
-    // Получение текущих настроек принтера
-    public static Map<String, String> getPrinterSettings() {
-        Map<String, String> settings = new HashMap<>();
-        settings.put("name", printerName);
-        settings.put("series", printerSeries);
-        settings.put("chars", String.valueOf(characterCount));
-        settings.put("hours", String.valueOf(workingHours));
-        log("Получены настройки принтера: " + settings);
-        return settings;
-    }
-
-    // Установка типа соединения (Serial или Ethernet)
-    public static void setConnectionType(boolean isSerial) {
-        isSerialConnection = isSerial;
-        log("Тип соединения установлен: " + (isSerial ? "Serial" : "Ethernet"));
-    }
-
-    // Открытие порта (Serial или Ethernet)
-    public static void openPort(String portName, String ip, int port) {
-        if (isSerialConnection) {
-            if (serialPort != null && serialPort.isOpen()) {
-                log("Порт уже открыт: " + portName);
-                return;
-            }
-            serialPort = SerialPort.getCommPort(portName);
-            if (serialPort.openPort()) {
-                serialPort.setBaudRate(9600);
-                serialPort.setNumDataBits(8);
-                serialPort.setNumStopBits(SerialPort.ONE_STOP_BIT);
-                serialPort.setParity(SerialPort.NO_PARITY);
-                log("Serial порт открыт: " + portName);
-            } else {
-                log("Ошибка открытия Serial порта: " + portName);
-            }
-        } else {
-            ipAddress = ip;
-            printerPort = port;
-            log("Ethernet соединение установлено: " + ip + ":" + port);
+    private static void notifyDataReceived(String data) {
+        System.out.println(data);
+        Logger.getInstance().log("[Get] "+data);
+        for (PrinterDataListener listener : listeners) {
+            listener.onDataReceived(data);
         }
     }
 
-    // Закрытие порта
+    private static void notifyStatus(String status) {
+        for (PrinterDataListener listener : listeners) {
+            listener.onStatusUpdate(status);
+        }
+    }
+
+    public static void openPort(String portName, String ip, int port) throws Exception {
+        if (portName != null) {
+            openSerialPort(portName);
+        } else {
+            openEthernetPort(ip, port);
+        }
+    }
+
+    private static void openSerialPort(String portName) throws Exception {
+        serialPort = SerialPort.getCommPort(portName);
+        if (!serialPort.openPort()) {
+            throw new Exception("Failed to open serial port");
+        }
+
+        serialPort.setBaudRate(9600);
+        serialPort.addDataListener(new SerialPortDataListener() {
+            @Override
+            public int getListeningEvents() {
+                return SerialPort.LISTENING_EVENT_DATA_AVAILABLE;
+            }
+
+            @Override
+            public void serialEvent(SerialPortEvent event) {
+                try {
+                    byte[] buffer = new byte[serialPort.bytesAvailable()];
+                    int numRead = serialPort.readBytes(buffer, buffer.length);
+                    String data = new String(buffer, 0, numRead, StandardCharsets.US_ASCII);
+                    notifyDataReceived(data);
+                } catch (Exception e) {
+                    notifyStatus("Serial read error: " + e.getMessage());
+                }
+            }
+        });
+    }
+
+    private static void openEthernetPort(String ip, int port) throws Exception {
+        ethernetSocket = new Socket(ip, port);
+        ethernetReader = new BufferedReader(
+                new InputStreamReader(ethernetSocket.getInputStream(), StandardCharsets.US_ASCII));
+
+        ethernetReadThread = new Thread(() -> {
+            try {
+                while (running) {
+                    if (ethernetReader.ready()) {
+
+
+                        String data = ethernetReader.readLine();
+                        if (data != null) notifyDataReceived(data);
+                    }
+                    Thread.sleep(150);
+                }
+            } catch (Exception e) {
+                notifyStatus("Ethernet read error: " + e.getMessage());
+            }
+        });
+        ethernetReadThread.start();
+    }
+
     public static void closePort() {
-        if (isSerialConnection) {
-            if (serialPort != null && serialPort.isOpen()) {
-                serialPort.closePort();
-                log("Serial порт закрыт.");
-            } else {
-                log("Serial порт уже закрыт.");
+        running = false;
+        if (serialPort != null && serialPort.isOpen()) {
+            serialPort.closePort();
+        }
+        if (ethernetSocket != null && !ethernetSocket.isClosed()) {
+            try {
+                ethernetSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } else {
-            log("Ethernet соединение закрыто.");
         }
     }
 
-    // Отправка данных на принтер
-    public static void sendData(byte[] data) {
-        if (isSerialConnection) {
-            if (serialPort == null || !serialPort.isOpen()) {
-                log("Ошибка: Serial порт не открыт.");
-                return;
-            }
+    public static void sendData(byte[] data) throws IOException {
+        if (serialPort != null && serialPort.isOpen()) {
+
             serialPort.writeBytes(data, data.length);
-            log("Данные отправлены через Serial порт.");
-        } else {
-            // Логика для Ethernet
-            log("Данные отправлены через Ethernet: " + new String(data));
+        } else if (ethernetSocket != null && ethernetSocket.isConnected()) {
+            OutputStream out = ethernetSocket.getOutputStream();
+            out.write(data);
+            out.flush();
         }
     }
 
-    // Получение статуса принтера
-    public static String getPrinterStatus() {
-        if (isSerialConnection) {
-            return "Serial порт " + (serialPort != null && serialPort.isOpen() ? "открыт" : "закрыт");
-        } else {
-            return "Ethernet соединение: " + ipAddress + ":" + printerPort;
+    public static void sendStopCommand() {
+        try {
+            Coder coder = new Coder();
+            PrinterCommand command = new PrinterCommand("03", ""); // Код функции 03
+            String formattedCommand = coder.prepareCommandForSending(command);
+            sendData(formattedCommand.getBytes(StandardCharsets.US_ASCII));
+        } catch (IOException e) {
+            notifyStatus("Ошибка отправки STOP: " + e.getMessage());
         }
     }
 
     public static boolean isConnectionOpen() {
-        if (isSerialConnection) {
-            return serialPort != null && serialPort.isOpen();
-        } else {
-            return ipAddress != null && !ipAddress.isEmpty();
+        if (serialPort != null && serialPort.isOpen()) {
+            return true;
+        } else if (ethernetSocket != null && ethernetSocket.isConnected()) {
+            return true;
         }
+        return false;
     }
 }

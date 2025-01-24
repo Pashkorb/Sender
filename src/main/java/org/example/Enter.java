@@ -28,7 +28,7 @@ public class Enter extends JDialog { // Используем JDialog вмест�
         super((JFrame) null, "Вход в систему", true); // Модальное окно
         System.out.println("[ENTER] Инициализация формы входа");
         setContentPane(panel1);
-        setSize(300, 200);
+        setSize(500, 200);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 

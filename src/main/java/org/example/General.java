@@ -1,5 +1,6 @@
 package org.example;
 
+import org.example.Model.PrinterDataListener;
 import org.example.Service.*;
 
 import javax.swing.*;
@@ -15,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class General extends JPanel{
+public class General extends JPanel implements PrinterDataListener {
     private JComboBox comboBox_Printers;
     private JTextField textFieldX1;
     private JTextField textFieldX2;
@@ -72,6 +73,7 @@ public class General extends JPanel{
     private JPanel Panel20;
     private JPanel Panel21;
     private JPanel Panel22;
+    private int remainingCopies = 0;
     private JPanel Panel23;
     private JTextField textFieldX3;
     private JLabel LabelX3;
@@ -110,6 +112,7 @@ public class General extends JPanel{
             } else {
                 System.out.println("Panel1 инициализирована.");
             }
+        PrinterManager.addDataListener(this);
 
             // Аналогично для остальных панелей...
 
@@ -138,6 +141,9 @@ public class General extends JPanel{
                     return;
                 }
 
+                if (CheckBox_CountPrint.isSelected()){
+                    remainingCopies = Integer.parseInt(textFieldCountPrint.getText());
+                }
                 // Собираем данные из текстовых полей
 
                 List<String> printTasks = new ArrayList<>();
@@ -167,11 +173,15 @@ public class General extends JPanel{
 
                     // Подготавливаем команду для отправки
                     String preparedCommand = coder.prepareCommandForSending(command);
+                    Logger.getInstance().log("[INFO] Подготовленная команда для отправки: " + preparedCommand);
                     System.out.println("[INFO] Подготовленная команда для отправки: " + preparedCommand);
+
 
                     // Отправляем данные через PrinterManager
                     byte[] data = preparedCommand.getBytes(StandardCharsets.US_ASCII);
                     PrinterManager.sendData(data);
+
+                    Logger.getInstance().log("[Send] "+preparedCommand);
 
                     JOptionPane.showMessageDialog(null, "Данные успешно отправлены!", "Успех", JOptionPane.INFORMATION_MESSAGE);
                 } catch (Exception ex) {
@@ -196,7 +206,41 @@ public class General extends JPanel{
 
             }
         });
+        ButtonStopPrinter.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                PrinterManager.sendStopCommand();
+            }
+        });
     }
+
+    @Override
+    public void onDataReceived(String data) {
+        SwingUtilities.invokeLater(() -> handlePrinterResponse(data));
+    }
+
+    @Override
+    public void onStatusUpdate(String status) {
+        SwingUtilities.invokeLater(() -> updateStatusLabel(status));
+    }
+
+    private void handlePrinterResponse(String data) {
+        if (data.contains("08000")) {
+            remainingCopies--;
+            textFieldRemaindedPrinting.setText(String.valueOf(remainingCopies));
+
+            if (remainingCopies <= 0) {
+                PrinterManager.sendStopCommand();
+                JOptionPane.showMessageDialog(this, "Печать завершена!");
+            }
+        }
+        // Добавьте другие обработчики статусов
+    }
+
+    private void updateStatusLabel(String status) {
+        // Обновление статусной метки
+    }
+
 
 
     // Метод для сохранения шаблона

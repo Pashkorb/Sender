@@ -23,8 +23,8 @@ public class MainFrame extends JFrame {
 
         setTitle("Главное окно");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1000, 800);
-
+        // Развернуть окно на весь экран
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
         // Инициализация панелей
         generalPanel = new General(this);
         settingPanel = new Setting(this);
@@ -81,12 +81,7 @@ public class MainFrame extends JFrame {
 
 
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            MainFrame frame = new MainFrame();
-            frame.setVisible(true);
-        });
-    }
+
 
     public void showReport() {
         ((CardLayout) mainPanel.getLayout()).show(mainPanel, "Report");
