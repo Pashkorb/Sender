@@ -41,12 +41,12 @@ public class Helper extends JPanel{
 
         // Формируем полное тело письма
         String fullBody = "Тип поддержки: " + supportType + "\n\n" + body;
-
+        String to=null;
         // Адрес получателя (техподдержка)
         if (supportType.equals("Айти поддержка")){
-            String to = "Etppe32@gmail.com";
+             to = "Etppe32@gmail.com";
         }
-        else{String to = "Etppe32@gmail.com"; }
+        else{ to = "Etppe32@gmail.com"; }
 
 
 
