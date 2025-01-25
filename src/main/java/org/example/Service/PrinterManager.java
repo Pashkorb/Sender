@@ -8,6 +8,7 @@ import java.util.Map;
 // PrinterManager.java
 import com.fazecast.jSerialComm.*;
 import org.example.Coder;
+import org.example.General;
 import org.example.Model.PrinterDataListener;
 import org.example.PrinterCommand;
 

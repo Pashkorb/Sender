@@ -13,14 +13,23 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 
 public class MainFrame extends JFrame {
+
     private JPanel mainPanel;
     private General generalPanel;
     private Setting settingPanel;
     private  Report reportPanel;
 
-    public MainFrame() {
-        System.out.println("[MAIN FRAME] Создание главного окна");
+    private Helper supportPanel;
 
+    public MainFrame() {
+
+
+        System.out.println("[MAIN FRAME] Создание главного окна");
+        UIManager.put("Panel.background", Color.WHITE);
+        UIManager.put("Button.background", Color.WHITE);
+        UIManager.put("TextField.background", Color.WHITE);
+        UIManager.put("TextArea.background", Color.WHITE);
+        UIManager.put("Label.background", Color.WHITE);
         setTitle("Главное окно");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         // Развернуть окно на весь экран
@@ -28,6 +37,7 @@ public class MainFrame extends JFrame {
         // Инициализация панелей
         generalPanel = new General(this);
         settingPanel = new Setting(this);
+        supportPanel=new Helper(this);
         reportPanel=new Report(this);
 
         // Настройка CardLayout
@@ -35,6 +45,7 @@ public class MainFrame extends JFrame {
         mainPanel.add(generalPanel, "General");
         mainPanel.add(settingPanel, "Settings");
         mainPanel.add(reportPanel, "Report");
+        mainPanel.add(supportPanel,"Support");
 
         add(mainPanel);
         showGeneral();
@@ -86,5 +97,9 @@ public class MainFrame extends JFrame {
     public void showReport() {
         ((CardLayout) mainPanel.getLayout()).show(mainPanel, "Report");
 
+    }
+
+    public void showSupport() {
+        ((CardLayout)mainPanel.getLayout()).show(mainPanel,"Support");
     }
 }

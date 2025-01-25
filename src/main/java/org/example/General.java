@@ -1,16 +1,15 @@
 package org.example;
 
 import org.example.Model.PrinterDataListener;
-import org.example.Service.*;
+import org.example.Service.Logger;
+import org.example.Service.PrinterManager;
+import org.example.Service.TemplateManager;
+import org.example.Service.TemplateSelectionDialog;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.nio.charset.StandardCharsets;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -65,7 +64,7 @@ public class General extends JPanel implements PrinterDataListener {
     private JPanel Panel15;
     private JPanel Panel21;
     private JPanel Panel22;
-    private int remainingCopies = 0;
+    private int remainingCopies;
     private JPanel Panel23;
     private JTextField textFieldX3;
     private JLabel LabelX3;
@@ -152,6 +151,7 @@ public class General extends JPanel implements PrinterDataListener {
 
                 if (CheckBox_CountPrint.isSelected()){
                     remainingCopies = Integer.parseInt(textFieldCountPrint.getText());
+                    textFieldRemaindedPrinting.setText(String.valueOf(remainingCopies));
                 }
                 // Собираем данные из текстовых полей
 
@@ -242,6 +242,12 @@ public class General extends JPanel implements PrinterDataListener {
                 setFieldsVisibility();
             }
         });
+        button1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                parent.showSupport();
+            }
+        });
     }
 
     private void setFieldsVisibility() {
@@ -283,7 +289,7 @@ public class General extends JPanel implements PrinterDataListener {
     }
 
     private void handlePrinterResponse(String data) {
-        if (data.contains("08000")) {
+        if (data.contains("08000")&&CheckBox_CountPrint.isSelected()) {
             remainingCopies--;
             textFieldRemaindedPrinting.setText(String.valueOf(remainingCopies));
 
