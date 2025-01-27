@@ -1,15 +1,17 @@
 package org.example;
 
 import org.example.Model.PrinterDataListener;
-import org.example.Service.Logger;
-import org.example.Service.PrinterManager;
-import org.example.Service.TemplateManager;
-import org.example.Service.TemplateSelectionDialog;
+import org.example.Service.*;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -100,8 +102,31 @@ public class General extends JPanel implements PrinterDataListener {
 //        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 //        pack();
         setVisible(true);
+        setFontForAllComponents(mainPanel, new Font("SansSerif", Font.PLAIN, 16));
 
-            // Присваиваем имена текстовым полям
+        // Убираем границы и фон кнопок
+        button1.setBorderPainted(false);
+        button1.setContentAreaFilled(false);
+        button1.setFocusPainted(false);
+        button1.setText(""); // Убираем текст, если он есть
+
+        button2.setBorderPainted(false);
+        button2.setContentAreaFilled(false);
+        button2.setFocusPainted(false);
+        button2.setText("");
+
+        button3.setBorderPainted(false);
+        button3.setContentAreaFilled(false);
+        button3.setFocusPainted(false);
+        button3.setText("");
+
+        button4.setBorderPainted(false);
+        button4.setContentAreaFilled(false);
+        button4.setFocusPainted(false);
+        button4.setText("");
+
+
+        // Присваиваем имена текстовым полям
             textFieldTextX0.setName("textFieldTextX0");
             textFieldTextX1.setName("textFieldTextX1");
             textFieldTextX2.setName("textFieldTextX2");
@@ -248,6 +273,77 @@ public class General extends JPanel implements PrinterDataListener {
                 parent.showSupport();
             }
         });
+        button4.addActionListener(new ActionListener() {
+
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String username = CurrentUser.getLogin();
+                Logger.getInstance().logLogout(username);
+                CurrentUser.clear();
+            }
+        });
+    }
+    void loadPrintersToComboBox() {
+        try (Connection conn = DatabaseManager.getInstance().getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT Наименование FROM Принтеры")) {
+
+            comboBox_Printers.removeAllItems(); // Очищаем список
+            while (rs.next()) {
+                comboBox_Printers.addItem(rs.getString("Наименование"));
+            }
+
+            System.out.println("[DEBUG] Загружено принтеров: " + comboBox_Printers.getItemCount());
+        } catch (SQLException ex) {
+            System.err.println("Ошибка загрузки принтеров: " + ex.getMessage());
+            JOptionPane.showMessageDialog(this,
+                    "Ошибка загрузки списка принтеров",
+                    "Ошибка",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    private void setFontForAllComponents(Container container, Font font) {
+        for (Component component : container.getComponents()) {
+            // Обрабатываем кнопки отдельно с принудительным обновлением
+            if (component instanceof JButton) {
+                JButton button = (JButton) component;
+                Font currentFont = button.getFont();
+                button.setFont(new Font(
+                        currentFont.getName(),
+                        currentFont.getStyle(),
+                        font.getSize()
+                ));
+                button.revalidate();
+                button.repaint();
+                continue;
+            }
+
+            // Остальная логика обработки
+            if (component instanceof JLabel
+                    || component instanceof JTextField
+                    || component instanceof JPasswordField) {
+
+                component.setFont(font);
+            }
+
+            // Рекурсивный обход контейнеров
+            if (component instanceof Container) {
+                Container childContainer = (Container) component;
+
+                // Особые случаи контейнеров
+                if (childContainer instanceof JScrollPane) {
+                    JScrollPane scrollPane = (JScrollPane) childContainer;
+                    setFontForAllComponents(scrollPane.getViewport(), font);
+                }
+                else if (childContainer instanceof JViewport) {
+                    setFontForAllComponents((Container) ((JViewport) childContainer).getView(), font);
+                }
+                else {
+                    setFontForAllComponents(childContainer, font);
+                }
+            }
+        }
     }
 
     private void setFieldsVisibility() {

@@ -1,18 +1,21 @@
 package org.example;
 
 import com.fazecast.jSerialComm.SerialPort;
+import org.example.Model.PrinterTableModel;
 import org.example.Model.UserTableModel;
 import org.example.Service.DatabaseManager;
 import org.example.Service.Logger;
 import org.example.Service.PrinterManager;
 import org.mindrot.jbcrypt.BCrypt;
 
+import java.awt.event.ActionListener;
+import java.time.format.DateTimeFormatter; // Добавьте этот импорт
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.sql.*;
+import java.time.LocalDate;
 
 
 public class Setting extends JPanel{
@@ -43,19 +46,29 @@ public class Setting extends JPanel{
     private JButton buttonGeneral;
     private JButton buttonHelper;
 
+    private PrinterTableModel printerModel;
+
     private JButton buttonSave;
 
     private JButton buttonAddUser;
+    private JButton ButtonAddPrinter;
+    private JButton buttonsavePrinters;
     private MainFrame parent;
-    public Setting(MainFrame parent) {
+    public Setting(MainFrame parent,LocalDate date) {
         this.parent = parent;
         add(mainPanel);
-
-        // Инициализация таблицы пользователей
+        String formattedDate = date.format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));
+        textFielLicense.setText("Лицензия активирована, дата окончания - " + formattedDate);        // Инициализация таблицы пользователей
         userModel = new UserTableModel();
         tableUsers.setModel(userModel);
         configureTable();
         loadUsers();
+
+        // Инициализация таблицы принтеров
+        printerModel = new PrinterTableModel();
+        tablePrinter.setModel(printerModel);
+        configurePrintersTable();
+        loadPrinters();
 
         // Настройка COM-портов
         SerialPort[] ports = SerialPort.getCommPorts();
@@ -72,7 +85,132 @@ public class Setting extends JPanel{
         buttonSave.addActionListener(e -> saveUsers());
 
         setSize(600, 400);
+        ButtonAddPrinter.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                printerModel.addRow(new Object[]{null, "", "", 0, 0});
+
+            }
+        });
+        buttonsavePrinters.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                savePrinters();
+            }
+        });
     }
+
+    private void savePrinters() {
+        try (Connection conn = DatabaseManager.getInstance().getConnection()) {
+            conn.setAutoCommit(false);
+            Logger logger = Logger.getInstance();
+
+            for (int i = 0; i < printerModel.getRowCount(); i++) {
+                Object[] row = printerModel.getRow(i);
+                Integer id = (Integer) row[0];
+
+                // Используем безопасное преобразование типов
+                String name = row[1] != null ? row[1].toString() : "";
+                String series = row[2] != null ? row[2].toString() : "";
+
+                // Преобразуем числовые значения с проверкой
+                int symbols = 0;
+                try {
+                    symbols = Integer.parseInt(row[3].toString());
+                } catch (NumberFormatException | NullPointerException e) {
+                    showError("Некорректное количество символов в строке " + (i+1));
+                    return;
+                }
+
+                int hours = 0;
+                try {
+                    hours = Integer.parseInt(row[4].toString());
+                } catch (NumberFormatException | NullPointerException e) {
+                    showError("Некорректное количество часов в строке " + (i+1));
+                    return;
+                }
+
+                if (name.trim().isEmpty()) {
+                    showError("Наименование не может быть пустым в строке " + (i+1));
+                    return;
+                }
+
+                if (id == null) {
+                    try (PreparedStatement pstmt = conn.prepareStatement(
+                            "INSERT INTO Принтеры (Наименование, Серия, КоличествоСимволов, ЧасыРаботы) VALUES (?, ?, ?, ?)")) {
+                        pstmt.setString(1, name.trim());
+                        pstmt.setString(2, series.trim());
+                        pstmt.setInt(3, symbols);
+                        pstmt.setInt(4, hours);
+                        pstmt.executeUpdate();
+                    }
+                } else {
+                    try (PreparedStatement pstmt = conn.prepareStatement(
+                            "UPDATE Принтеры SET Наименование=?, Серия=?, КоличествоСимволов=?, ЧасыРаботы=? WHERE id=?")) {
+                        pstmt.setString(1, name.trim());
+                        pstmt.setString(2, series.trim());
+                        pstmt.setInt(3, symbols);
+                        pstmt.setInt(4, hours);
+                        pstmt.setInt(5, id);
+                        pstmt.executeUpdate();
+                    }
+                }
+            }
+            conn.commit();
+            logger.log("Данные принтеров успешно сохранены");
+        } catch (SQLException ex) {
+            showError("Ошибка сохранения принтеров: " + ex.getMessage());
+            Logger.getInstance().logError("Ошибка сохранения принтеров: " + ex.getMessage());
+        }
+    }
+
+    private void loadPrinters() {
+        try (Connection conn = DatabaseManager.getInstance().getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT id, Наименование, Серия, КоличествоСимволов, ЧасыРаботы FROM Принтеры")) {
+
+            printerModel = new PrinterTableModel();
+            while (rs.next()) {
+                Object[] row = {
+                        rs.getInt("id"),
+                        rs.getString("Наименование"),
+                        rs.getString("Серия"),
+                        rs.getInt("КоличествоСимволов"),
+                        rs.getInt("ЧасыРаботы")
+                };
+                printerModel.addRow(row);
+            }
+            tablePrinter.setModel(printerModel);
+        } catch (SQLException ex) {
+            showError("Ошибка загрузки принтеров: " + ex.getMessage());
+        }
+    }
+
+
+    private void configurePrintersTable() {
+        // Редактор для числовых колонок
+        tablePrinter.setDefaultEditor(Integer.class, new DefaultCellEditor(new JTextField()) {
+            @Override
+            public boolean stopCellEditing() {
+                try {
+                    String value = getCellEditorValue().toString();
+                    if (!value.isEmpty()) Integer.parseInt(value);
+                    return super.stopCellEditing();
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(tablePrinter,
+                            "Введите целое число", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                    return false;
+                }
+            }
+        });
+
+        // Выравнивание для числовых колонок
+        DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+        rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
+        tablePrinter.getColumnModel().getColumn(2).setCellRenderer(rightRenderer);
+        tablePrinter.getColumnModel().getColumn(3).setCellRenderer(rightRenderer);
+    }
+
     private void configureTable() {
         tableUsers.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
             @Override

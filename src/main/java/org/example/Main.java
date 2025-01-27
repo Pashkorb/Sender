@@ -16,7 +16,9 @@ public class Main {
 
         public static void main(String[] args) {
             System.out.println("[MAIN] Запуск приложения");
+            LocalDate expirationDate = LocalDate.of(2026, 12, 12);
 
+            LicenseManager.generateLicenseKey(expirationDate);
             try {
                 System.out.println("[MAIN] Проверка лицензии...");
                 String licenseKey = LicenseManager.loadLicense();
@@ -29,6 +31,8 @@ public class Main {
                     if (dialog.isLicenseValid()) {
                         System.out.println("[MAIN] Лицензия активирована");
                         LicenseManager.saveLicense(dialog.getLicenseKey());
+                        licenseKey = dialog.getLicenseKey(); // Обновляем licenseKey
+
                     } else {
                         System.out.println("[MAIN] Лицензия не активирована. Выход");
                         JOptionPane.showMessageDialog(null, "Лицензия не активирована. Программа завершена.", "Ошибка", JOptionPane.ERROR_MESSAGE);
@@ -36,9 +40,14 @@ public class Main {
                     }
                 }
 
+                // Извлекаем дату окончания лицензии
+                com.auth0.jwt.interfaces.DecodedJWT jwt = com.auth0.jwt.JWT.decode(licenseKey);
+                LocalDate Date = LocalDate.parse(jwt.getClaim("expiration").asString());
+                System.out.println("[MAIN] Дата окончания лицензии: " + expirationDate);
+
                 System.out.println("[MAIN] Создание формы входа...");
                 SwingUtilities.invokeLater(() -> {
-                    Enter enterForm = new Enter();
+                    Enter enterForm = new Enter(Date);
                     enterForm.setVisible(true);
                     System.out.println("[MAIN] Форма входа закрыта");
                 });

@@ -11,6 +11,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.time.LocalDate;
 
 public class MainFrame extends JFrame {
 
@@ -21,9 +22,13 @@ public class MainFrame extends JFrame {
 
     private Helper supportPanel;
 
-    public MainFrame() {
 
 
+    private LocalDate date;
+
+    public MainFrame(LocalDate dated) {
+
+        date=dated;
         System.out.println("[MAIN FRAME] Создание главного окна");
         UIManager.put("Panel.background", Color.WHITE);
         UIManager.put("Button.background", Color.WHITE);
@@ -36,7 +41,7 @@ public class MainFrame extends JFrame {
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         // Инициализация панелей
         generalPanel = new General(this);
-        settingPanel = new Setting(this);
+        settingPanel = new Setting(this,date);
         supportPanel=new Helper(this);
         reportPanel=new Report(this);
 
@@ -46,6 +51,8 @@ public class MainFrame extends JFrame {
         mainPanel.add(settingPanel, "Settings");
         mainPanel.add(reportPanel, "Report");
         mainPanel.add(supportPanel,"Support");
+
+
 
         add(mainPanel);
         showGeneral();
@@ -84,6 +91,8 @@ public class MainFrame extends JFrame {
 
     public void showGeneral() {
         ((CardLayout) mainPanel.getLayout()).show(mainPanel, "General");
+        generalPanel.loadPrintersToComboBox(); // Обновляем список при открытии
+
     }
 
     public void showSettings() {

@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 
 public class Enter extends JDialog { // Используем JDialog вместо JFrame
     private JPanel panel1;
@@ -24,9 +25,12 @@ public class Enter extends JDialog { // Используем JDialog вмест�
     private JPanel panel5;
     private JPanel panel6;
 
-    public Enter() {
+    private LocalDate date;
+    public Enter(LocalDate expirationDate) {
         super((JFrame) null, "Вход в систему", true); // Модальное окно
         System.out.println("[ENTER] Инициализация формы входа");
+        date=expirationDate;
+
         setContentPane(panel1);
         setSize(500, 200);
         setLocationRelativeTo(null);
@@ -89,7 +93,7 @@ public class Enter extends JDialog { // Используем JDialog вмест�
     private void openMainFrame() {
         SwingUtilities.invokeLater(() -> {
             System.out.println("[ENTER] Создание MainFrame");
-            MainFrame mainFrame = new MainFrame();
+            MainFrame mainFrame = new MainFrame(date);
             mainFrame.setVisible(true);
         });
     }

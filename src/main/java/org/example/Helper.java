@@ -3,6 +3,7 @@ package org.example;
 import org.example.Service.EmailSender;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -19,10 +20,11 @@ public class Helper extends JPanel{
         this.parent = parent;
         add(mainPanel); // Добавляем панель из дизайнера
         // Инициализация формы
+        setFontForAllComponents(mainPanel, new Font("SansSerif", Font.PLAIN, 20));
 
-        setSize(800, 600);
+//        setSize(800, 600);
 
-        setVisible(true);
+//        setVisible(true);
 
         // Обработчик для кнопки "Отправить"
         отправитьButton.addActionListener(new ActionListener() {
@@ -60,5 +62,46 @@ public class Helper extends JPanel{
         }
     }
 
+    private void setFontForAllComponents(Container container, Font font) {
+        for (Component component : container.getComponents()) {
+            // Обрабатываем кнопки отдельно с принудительным обновлением
+            if (component instanceof JButton) {
+                JButton button = (JButton) component;
+                Font currentFont = button.getFont();
+                button.setFont(new Font(
+                        currentFont.getName(),
+                        currentFont.getStyle(),
+                        font.getSize()
+                ));
+                button.revalidate();
+                button.repaint();
+                continue;
+            }
 
+            // Остальная логика обработки
+            if (component instanceof JLabel
+                    || component instanceof JTextField
+                    || component instanceof JPasswordField) {
+
+                component.setFont(font);
+            }
+
+            // Рекурсивный обход контейнеров
+            if (component instanceof Container) {
+                Container childContainer = (Container) component;
+
+                // Особые случаи контейнеров
+                if (childContainer instanceof JScrollPane) {
+                    JScrollPane scrollPane = (JScrollPane) childContainer;
+                    setFontForAllComponents(scrollPane.getViewport(), font);
+                }
+                else if (childContainer instanceof JViewport) {
+                    setFontForAllComponents((Container) ((JViewport) childContainer).getView(), font);
+                }
+                else {
+                    setFontForAllComponents(childContainer, font);
+                }
+            }
+        }
+    }
 }
