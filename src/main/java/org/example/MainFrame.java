@@ -40,7 +40,7 @@ public class MainFrame extends JFrame {
         // Развернуть окно на весь экран
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         // Инициализация панелей
-        generalPanel = new General(this);
+        generalPanel = new General(this,date);
         settingPanel = new Setting(this,date);
         supportPanel=new Helper(this);
         reportPanel=new Report(this);

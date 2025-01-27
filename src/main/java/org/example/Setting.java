@@ -70,6 +70,24 @@ public class Setting extends JPanel{
         configurePrintersTable();
         loadPrinters();
 
+        // Убираем границы и фон кнопок
+        buttonHelper.setBorderPainted(false);
+        buttonHelper.setContentAreaFilled(false);
+        buttonHelper.setFocusPainted(false);
+        buttonHelper.setText(""); // Убираем текст, если он есть
+
+        buttonGeneral.setBorderPainted(false);
+        buttonGeneral.setContentAreaFilled(false);
+        buttonGeneral.setFocusPainted(false);
+        buttonGeneral.setText("");
+
+        buttonReport.setBorderPainted(false);
+        buttonReport.setContentAreaFilled(false);
+        buttonReport.setFocusPainted(false);
+        buttonReport.setText("");
+
+
+
         // Настройка COM-портов
         SerialPort[] ports = SerialPort.getCommPorts();
         for (SerialPort port : ports) {
@@ -81,6 +99,8 @@ public class Setting extends JPanel{
         ButtonClosePort.addActionListener(this::handleClosePort);
         buttonReport.addActionListener(e -> parent.showReport());
         buttonGeneral.addActionListener(e -> parent.showGeneral());
+        buttonHelper.addActionListener(e->parent.showSupport());
+
         buttonAddUser.addActionListener(e -> addNewUser());
         buttonSave.addActionListener(e -> saveUsers());
 
@@ -98,6 +118,7 @@ public class Setting extends JPanel{
                 savePrinters();
             }
         });
+
     }
 
     private void savePrinters() {

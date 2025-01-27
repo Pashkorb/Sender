@@ -8,10 +8,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.nio.charset.StandardCharsets;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -93,9 +91,12 @@ public class General extends JPanel implements PrinterDataListener {
     private JPanel Panel14;
     private MainFrame parent;
 
-    public General(MainFrame parent) {
+    private LocalDate date;
+
+    public General(MainFrame parent, LocalDate date) {
         this.parent = parent;
         add(mainPanel); // Добавляем панель из дизайнера
+        this.date=date;
 //
 //        setContentPane(panel1);
 //        setTitle("General");
@@ -274,15 +275,50 @@ public class General extends JPanel implements PrinterDataListener {
             }
         });
         button4.addActionListener(new ActionListener() {
-
-
             @Override
             public void actionPerformed(ActionEvent e) {
-                String username = CurrentUser.getLogin();
-                Logger.getInstance().logLogout(username);
-                CurrentUser.clear();
+                if (CurrentUser.getLogin() != null) {
+                    // Логирование выхода
+                    String username = CurrentUser.getLogin();
+                    Logger.getInstance().logLogout(username);
+                    logLogout(); // Запись в БД
+                    CurrentUser.clear();
+
+                    // Закрываем главное окно
+                    Window window = SwingUtilities.getWindowAncestor(button4);
+                    if (window != null) {
+                        window.dispose();
+                    }
+
+                    // Открываем окно входа
+                    new Enter(date).setVisible(true);
+                } else {
+                    // Открываем диалог входа
+                    Enter enterDialog = new Enter(date);
+                    enterDialog.setVisible(true);
+
+                    // Если вход успешен, обновляем интерфейс
+                    if (CurrentUser.getLogin() != null) {
+                        Window window = SwingUtilities.getWindowAncestor(button4);
+                        if (window != null) {
+                            window.dispose();
+                        }
+                        new MainFrame(date).setVisible(true);
+                    }
+                }
             }
         });
+    }
+
+    private void logLogout() {
+        try (Connection conn = DatabaseManager.getInstance().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(
+                     "INSERT INTO ЖурналАвторизаций (Пользователь_id, ТипСобытия, ДатаВремя) VALUES (?, 'Выход', datetime('now'))")) {
+            pstmt.setInt(1, CurrentUser.getId());
+            pstmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     void loadPrintersToComboBox() {
         try (Connection conn = DatabaseManager.getInstance().getConnection();

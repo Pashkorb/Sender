@@ -16,7 +16,7 @@
         <properties/>
         <border type="none"/>
         <children>
-          <grid id="7b519" layout-manager="GridLayoutManager" row-count="5" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+          <grid id="7b519" layout-manager="GridLayoutManager" row-count="5" column-count="8" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="0" bottom="0" right="0"/>
             <constraints>
               <grid row="1" column="1" row-span="3" col-span="2" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -79,6 +79,33 @@
                   </component>
                 </children>
               </scrollpane>
+              <component id="9eb83" class="javax.swing.JButton" binding="button1" default-binding="true">
+                <constraints>
+                  <grid row="2" column="7" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="1" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <icon value="images/Кнопка настроек.png"/>
+                  <text value=""/>
+                </properties>
+              </component>
+              <component id="2adb4" class="javax.swing.JButton" binding="button3">
+                <constraints>
+                  <grid row="2" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="1" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <icon value="images/Кнопка поддержки.jpg"/>
+                  <text value=""/>
+                </properties>
+              </component>
+              <component id="29e70" class="javax.swing.JButton" binding="button2">
+                <constraints>
+                  <grid row="2" column="6" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="1" fill="1" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <icon value="images/FastjetF540 (1).png"/>
+                  <text value=""/>
+                </properties>
+              </component>
             </children>
           </grid>
           <component id="bf47f" class="javax.swing.JLabel">
@@ -187,6 +214,7 @@
         <constraints>
           <grid row="1" column="0" row-span="5" col-span="1" vsize-policy="1" hsize-policy="2" anchor="0" fill="1" indent="0" use-parent-layout="false">
             <minimum-size width="5" height="-1"/>
+            <maximum-size width="10" height="-1"/>
           </grid>
         </constraints>
       </hspacer>
@@ -211,7 +239,7 @@
       </hspacer>
       <hspacer id="865bb">
         <constraints>
-          <grid row="7" column="1" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="7" column="1" row-span="1" col-span="1" vsize-policy="1" hsize-policy="2" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
       </hspacer>
       <vspacer id="44571">

@@ -88,8 +88,6 @@ public class Enter extends JDialog { // Используем JDialog вмест�
         }
     }
 
-
-
     private void openMainFrame() {
         SwingUtilities.invokeLater(() -> {
             System.out.println("[ENTER] Создание MainFrame");
