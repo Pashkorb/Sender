@@ -13,8 +13,16 @@ import java.time.LocalDate;
 
 public class Main {
 
+    public static void main(String[] args) {
+        Hello helloForm = new Hello();
+        helloForm.setVisible(true);
+    }
 
-        public static void main(String[] args) {
+
+}
+
+/*
+public static void main(String[] args) {
             System.out.println("[MAIN] Запуск приложения");
             LocalDate expirationDate = LocalDate.of(2026, 12, 12);
 
@@ -59,4 +67,7 @@ public class Main {
                 System.exit(1);
             }
         }
-    }
+
+
+
+*/

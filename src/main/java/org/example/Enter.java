@@ -32,7 +32,7 @@ public class Enter extends JDialog { // Используем JDialog вмест�
         date=expirationDate;
 
         setContentPane(panel1);
-        setSize(500, 200);
+        setSize(1244, 588);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 

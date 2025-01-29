@@ -59,6 +59,11 @@ public class Helper extends JPanel{
         });
     }
 
+    public Helper(Hello hello) {
+        this.parent = parent;
+        add(mainPanel); // Добавляем панель из дизайнера
+    }
+
 
     private void sendEmail() {
         // Получаем данные из формы
