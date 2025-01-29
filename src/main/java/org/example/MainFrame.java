@@ -4,6 +4,7 @@ package org.example;
 import org.example.Service.CurrentUser;
 import org.example.Service.DatabaseManager;
 import org.example.Service.Logger;
+import org.example.Service.UserRole;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,6 +15,7 @@ import java.sql.PreparedStatement;
 import java.time.LocalDate;
 
 public class MainFrame extends JFrame {
+    private final Logger logger = Logger.getInstance(); // Добавляем логгер
 
     private JPanel mainPanel;
     private General generalPanel;
@@ -107,8 +109,18 @@ public class MainFrame extends JFrame {
     }
 
     public void showAdmin() {
-
-        ((CardLayout) mainPanel.getLayout()).show(mainPanel, "Admin");
+        if (CurrentUser.getRole().equals(UserRole.ADMIN)) {
+            ((CardLayout) mainPanel.getLayout()).show(mainPanel, "Admin");
+        } else {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "У вас недостаточно прав для доступа к административному разделу",
+                    "Ошибка доступа",
+                    JOptionPane.ERROR_MESSAGE
+            );
+            logger.log("Попытка несанкционированного доступа к админ-панели пользователем: "
+                    + CurrentUser.getName());
+        }
     }
 
     public void showHome(){

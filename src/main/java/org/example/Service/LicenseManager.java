@@ -105,4 +105,13 @@ public class LicenseManager {
         System.out.println("[INFO] Лицензия успешно загружена из файла.");
         return licenseKey;
     }
+
+    public static LocalDate getExpirationDate(String licenseKey) {
+        try {
+            DecodedJWT jwt = JWT.decode(licenseKey);
+            return LocalDate.parse(jwt.getClaim("expiration").asString());
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

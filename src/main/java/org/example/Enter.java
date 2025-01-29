@@ -3,6 +3,7 @@ package org.example;
 import org.example.Service.CurrentUser;
 import org.example.Service.DatabaseManager;
 import org.example.Service.Logger;
+import org.example.Service.UserRole;
 import org.mindrot.jbcrypt.BCrypt;
 
 import javax.swing.*;
@@ -15,6 +16,8 @@ import java.time.LocalDate;
 
 public class Enter extends JDialog { // Используем JDialog вместо JFrame
     private JPanel panel1;
+    private final Logger logger = Logger.getInstance(); // Добавляем логгер
+
     private JButton buttonSupport;
     private JButton ButtonEnter;
     private JTextField textFieldLogin;//логин
@@ -60,7 +63,7 @@ public class Enter extends JDialog { // Используем JDialog вмест�
 
         try (Connection conn = DatabaseManager.getInstance().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(
-                     "SELECT id, Пароль, Фио FROM Пользователи WHERE Логин = ?")) {
+                     "SELECT id, Пароль, Фио,Роль,Доступ FROM Пользователи WHERE Логин = ?")) {
 
             pstmt.setString(1, login);
             ResultSet rs = pstmt.executeQuery();
@@ -68,11 +71,36 @@ public class Enter extends JDialog { // Используем JDialog вмест�
             if (rs.next()) {
                 String storedHash = rs.getString("Пароль");
                 if (BCrypt.checkpw(password, storedHash)) {
+                    boolean isUserActive = rs.getBoolean("Доступ");
+
+                    if (!isUserActive) {
+                        String logMessage = String.format(
+                                "Доступ запрещен. Пользователь '%s' деактивирован",
+                                CurrentUser.getLogin()
+                        );
+
+                        // Логирование события
+                        Logger.getInstance().log(logMessage);
+
+                        // Опционально: показать сообщение пользователю
+                        JOptionPane.showMessageDialog(
+                                null,
+                                "Ваш аккаунт деактивирован",
+                                "Доступ запрещен",
+                                JOptionPane.WARNING_MESSAGE
+                        );
+
+                        // Выход из метода/закрытие ресурсов
+                            return;
+                    }
                     int userId = rs.getInt("id");
                     String name = rs.getString("Фио");
+                    String srole =rs.getString("Роль");
+                    UserRole role=UserRole.fromString(srole);
                     CurrentUser.setId(userId);
                     CurrentUser.setLogin(login);
                     CurrentUser.setName(name);
+                    CurrentUser.setRole(role);
 
                     // Логируем вход
                     Logger.getInstance().logLogin(login);

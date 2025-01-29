@@ -26,12 +26,6 @@ public class UserTableModel extends AbstractTableModel {
         return columnNames[col];
     }
 
-    @Override
-    public Class<?> getColumnClass(int columnIndex) {
-        if (columnIndex == 1) return UserRole.class; // Указываем тип UserRole
-        if (columnIndex == 4) return Boolean.class;
-        return String.class;
-    }
 
     @Override
     public boolean isCellEditable(int row, int col) {
@@ -43,18 +37,20 @@ public class UserTableModel extends AbstractTableModel {
         return data.get(row)[col]; // Возвращаем объект как есть
     }
     @Override
-    public void setValueAt(Object value, int row, int col) {
-        if (col == 1) {
-            // Если значение пришло как строка, преобразуем его в UserRole
-            if (value instanceof String) {
-                value = UserRole.fromString((String) value);
-            }
-            data.get(row)[col] = value;
+    public Class<?> getColumnClass(int columnIndex) {
+        if (columnIndex == 4) return Boolean.class;
+        return String.class; // Все колонки обрабатываем как String
+    }
+
+    @Override
+    public void setValueAt(Object value, int row, int column) {
+        if (column == 1 && value instanceof UserRole) {
+            // Сохраняем название роли вместо объекта
+            data.get(row)[column] = ((UserRole) value).getRoleName();
         } else {
-            data.get(row)[col] = value;
+            data.get(row)[column] = value;
         }
-        modified.set(row, true);
-        fireTableCellUpdated(row, col);
+        fireTableCellUpdated(row, column);
     }
 
     public void addRow(Object[] row) {
@@ -78,9 +74,11 @@ public class UserTableModel extends AbstractTableModel {
     public void setRowCount(int rowCount) {
         if (rowCount == 0) {
             int oldSize = data.size();
-            data.clear();
-            modified.clear();
-            fireTableRowsDeleted(0, oldSize-1);
+            if (oldSize > 0) { // Добавляем проверку на положительный размер
+                data.clear();
+                modified.clear();
+                fireTableRowsDeleted(0, oldSize - 1);
+            }
         }
     }
 }

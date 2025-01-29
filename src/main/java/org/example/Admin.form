@@ -3,7 +3,7 @@
   <grid id="27dc6" binding="mainPanel" layout-manager="GridLayoutManager" row-count="2" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="1083" height="400"/>
+      <xy x="20" y="20" width="1818" height="400"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -104,7 +104,8 @@
               <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
-              <text value="Label"/>
+              <font size="24"/>
+              <text value=""/>
             </properties>
           </component>
           <component id="e2fd3" class="javax.swing.JButton" binding="buttonLogOut">
@@ -118,7 +119,7 @@
           </component>
         </children>
       </grid>
-      <grid id="8fcda" layout-manager="GridLayoutManager" row-count="5" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+      <grid id="8fcda" layout-manager="GridLayoutManager" row-count="6" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
           <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -143,9 +144,10 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="a41a9" class="javax.swing.JTextField" binding="textField1" default-binding="true">
+              <component id="a41a9" class="javax.swing.JTextField" binding="textFieldLicence">
                 <constraints>
                   <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                    <minimum-size width="400" height="-1"/>
                     <preferred-size width="150" height="-1"/>
                   </grid>
                 </constraints>
@@ -165,7 +167,7 @@
               </hspacer>
             </children>
           </grid>
-          <component id="d6ad9" class="javax.swing.JTextField" binding="textField2" default-binding="true">
+          <component id="d6ad9" class="javax.swing.JTextField" binding="textFieldNextLicence">
             <constraints>
               <grid row="2" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <minimum-size width="500" height="-1"/>
@@ -176,7 +178,7 @@
               <font size="24"/>
             </properties>
           </component>
-          <component id="256a6" class="javax.swing.JButton" binding="активироватьButton" default-binding="true">
+          <component id="256a6" class="javax.swing.JButton" binding="ButtonActiveLicence">
             <constraints>
               <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
@@ -194,7 +196,7 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="b5aab" class="javax.swing.JTable" binding="table1" default-binding="true">
+              <component id="b5aab" class="javax.swing.JTable" binding="tableUser">
                 <constraints/>
                 <properties/>
               </component>
@@ -209,13 +211,21 @@
               <text value="Пользователи"/>
             </properties>
           </component>
-          <component id="795db" class="javax.swing.JButton" binding="новыйПользовательButton" default-binding="true">
+          <component id="795db" class="javax.swing.JButton" binding="ButtonAddUser">
             <constraints>
               <grid row="3" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <font size="24"/>
               <text value="Новый пользователь"/>
+            </properties>
+          </component>
+          <component id="67619" class="javax.swing.JButton" binding="buttonSaveUsers">
+            <constraints>
+              <grid row="5" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Button"/>
             </properties>
           </component>
         </children>
@@ -251,7 +261,7 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="d068a" class="javax.swing.JTable" binding="table2" default-binding="true">
+              <component id="d068a" class="javax.swing.JTable" binding="tableErrors">
                 <constraints/>
                 <properties/>
               </component>
