@@ -24,12 +24,10 @@ public class General extends JPanel implements PrinterDataListener {
     private JTextField textFieldCountPrint;
     private JButton ButtonAddField;
     private JButton ButtonRemoveField;
-    private JButton ButtonUppdateDateSample;
     private JButton ButtonStopPrinter;
     private JButton ButtonSendDataForPrinter;
     private JButton ButtonSelectSample;
     private JTextField textFieldNameFieldX0;
-    private JButton ButtonRemoveFieldInSample;
     private JButton ButtonAddFieldInSample;
     private JTextField textFieldTextX0;
     private JTextField textFieldTextX2;
@@ -40,7 +38,6 @@ public class General extends JPanel implements PrinterDataListener {
     private JButton button2;
     private JButton button3;
     private JButton button4;
-    private JPasswordField textFieldPrintedCount;
     private JTextField textFieldRemaindedPrinting;
     private JTextField textFieldNameFieldX1;
     private JTextField textFieldNameFieldX2;
@@ -49,23 +46,7 @@ public class General extends JPanel implements PrinterDataListener {
     private int visibleFieldsCount = 3; // Начальное количество видимых полей
 
 
-    private JPanel Panel1;
-    private JPanel Panel2;
-    private JPanel Panel3;
-    private JPanel Panel4;
-    private JPanel Panel5;
-    private JPanel Panel6;
-    private JPanel Panel7;
-    private JPanel Panel8;
-    private JPanel Panel9;
-    private JPanel Panel10;
-    private JPanel Panel11;
-    private JPanel Panel12;
-    private JPanel Panel15;
-    private JPanel Panel21;
-    private JPanel Panel22;
     private int remainingCopies;
-    private JPanel Panel23;
     private JTextField textFieldX3;
     private JLabel LabelX3;
     private JLabel LabelX2;
@@ -86,9 +67,6 @@ public class General extends JPanel implements PrinterDataListener {
     private JPanel JPanelX3;
     private JPanel JPanelX4;
     private JPanel JPanelX5;
-    private JPanel Panel13;
-    private JLabel LabelNameFieldX0;
-    private JPanel Panel14;
     private MainFrame parent;
 
     private LocalDate date;

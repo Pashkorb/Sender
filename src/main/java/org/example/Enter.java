@@ -6,8 +6,6 @@ import org.example.Service.Logger;
 import org.mindrot.jbcrypt.BCrypt;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,14 +14,10 @@ import java.time.LocalDate;
 
 public class Enter extends JDialog { // Используем JDialog вместо JFrame
     private JPanel panel1;
-    private JButton входButton;
-    private JTextField textField1;//логин
-    private JTextField textField2;//пароль
-    private JPanel panel2;
-    private JPanel panel3;
-    private JPanel panel4;
-    private JPanel panel5;
-    private JPanel panel6;
+    private JButton buttonSupport;
+    private JButton ButtonEnter;
+    private JTextField textFieldLogin;//логин
+    private JTextField textFieldPassword;//пароль
 
     private LocalDate date;
     public Enter(LocalDate expirationDate) {
@@ -36,7 +30,7 @@ public class Enter extends JDialog { // Используем JDialog вмест�
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        входButton.addActionListener(e -> {
+        ButtonEnter.addActionListener(e -> {
             System.out.println("[ENTER] Нажата кнопка входа");
             authenticate();
         });
@@ -51,8 +45,8 @@ public class Enter extends JDialog { // Используем JDialog вмест�
 
 
 
-        String login = textField1.getText();
-        String password = textField2.getText();
+        String login = textFieldLogin.getText();
+        String password = textFieldPassword.getText();
         System.out.println("[ENTER] Попытка входа для: " + login);
 
         try (Connection conn = DatabaseManager.getInstance().getConnection();
