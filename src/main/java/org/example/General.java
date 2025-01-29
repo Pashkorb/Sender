@@ -57,11 +57,11 @@ public class General extends JPanel implements PrinterDataListener {
     private JButton buttonReport;
     private JLabel LableName;
     private JTable table1;
-    private JComboBox comboBox1;
-    private JCheckBox печатьПоКоличествуCheckBox;
     private JTextField textField2;
-    private JTextField TextField;
+    private JTextField numberIsPrinted;
     private JTextField статусПринтераTextField;
+    private JScrollPane TableFields;
+    private JTextField remainsToPrint;
     private JTextField textFieldX5;
     private JLabel LabelX5;
     private JTextField textFieldTextX4;
@@ -87,7 +87,7 @@ public class General extends JPanel implements PrinterDataListener {
 
         buttonHome.addActionListener(e -> parent.showHome());
         buttonSetting.addActionListener(e -> parent.showSettings());
-//        buttonAdmin.addActionListener(e->parent.showHome());
+        buttonAdmin.addActionListener(e->parent.showAdmin());
         buttonPrinter.addActionListener(e->parent.showGeneral());
         buttonSupport.addActionListener(e -> parent.showSupport());
         buttonReport.addActionListener(e -> parent.showReport());

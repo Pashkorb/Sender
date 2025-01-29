@@ -20,10 +20,11 @@ public class Home extends JPanel{
         this.parent=parent;
         add(mainframe);
         LableName.setText(CurrentUser.getName());
+        setSize(1920, 1080);
 
         buttonHome.addActionListener(e -> parent.showHome());
         buttonSetting.addActionListener(e -> parent.showSettings());
-//        buttonAdmin.addActionListener(e->parent.showHome());
+        buttonAdmin.addActionListener(e->parent.showAdmin());
         buttonPrinter.addActionListener(e->parent.showGeneral());
         buttonSupport.addActionListener(e -> parent.showSupport());
         buttonReport.addActionListener(e -> parent.showReport());

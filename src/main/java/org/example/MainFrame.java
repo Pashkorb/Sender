@@ -20,7 +20,8 @@ public class MainFrame extends JFrame {
     private Setting settingPanel;
     private  Report reportPanel;
 
-    private Helper supportPanel;
+    private Support supportPanel;
+    private Admin adminPanel;
 
     private Home homePanel;
 
@@ -39,20 +40,23 @@ public class MainFrame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         // Развернуть окно на весь экран
         setExtendedState(JFrame.MAXIMIZED_BOTH);
+
         // Инициализация панелей
         homePanel=new Home(this);
+        supportPanel=new Support(this);
         generalPanel = new General(this,date);
-//        settingPanel = new Setting(this,date);
-//        supportPanel=new Helper(this);
+        settingPanel = new Setting(this,date);
+        adminPanel=new Admin(this,date);
 //        reportPanel=new Report(this);
 
         // Настройка CardLayout
         mainPanel = new JPanel(new CardLayout());
         mainPanel.add(homePanel,"Home");
+        mainPanel.add(generalPanel, "Support");
         mainPanel.add(generalPanel, "General");
-//        mainPanel.add(settingPanel, "Settings");
+        mainPanel.add(settingPanel, "Settings");
 //        mainPanel.add(reportPanel, "Report");
-//        mainPanel.add(supportPanel,"Support");
+        mainPanel.add(adminPanel,"Admin");
 
 
 
@@ -100,6 +104,11 @@ public class MainFrame extends JFrame {
     public void showSettings() {
 
         ((CardLayout) mainPanel.getLayout()).show(mainPanel, "Settings");
+    }
+
+    public void showAdmin() {
+
+        ((CardLayout) mainPanel.getLayout()).show(mainPanel, "Admin");
     }
 
     public void showHome(){

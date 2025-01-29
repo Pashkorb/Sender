@@ -1,6 +1,5 @@
 package org.example;
 
-import com.fazecast.jSerialComm.SerialPort;
 import org.example.Model.PrinterTableModel;
 import org.example.Model.UserTableModel;
 import org.example.Service.DatabaseManager;
@@ -8,8 +7,6 @@ import org.example.Service.Logger;
 import org.example.Service.PrinterManager;
 import org.mindrot.jbcrypt.BCrypt;
 
-import java.awt.event.ActionListener;
-import java.time.format.DateTimeFormatter; // Добавьте этот импорт
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
@@ -26,23 +23,24 @@ public class Setting extends JPanel{
     private JTextField textFieldIPAdress;
     private JCheckBox ethernetCheckBox;
     private JTextField textFieldPrinterPort;
-    private JTextField textFieldPCPort;
     private JButton ButtonOpenPort;
     private JButton ButtonClosePort;
     private JTable tablePrinter;
     private JTable tableUsers;
-    private JTextPane textPaneErrors;
-    private JPanel panel2;
-    private JPanel panel3;
-    private JPanel panel4;
-    private JPanel panel5;
-    private JPanel panel6;
-    private JPanel panel7;
-    private JPanel panel8;
-    private JPanel panel9;
 
     private JPanel mainPanel; // Главная панель из дизайнера
     private JButton buttonReport;
+    private JButton buttonHome;
+    private JButton buttonSetting;
+    private JButton buttonAdmin;
+    private JButton buttonPrinter;
+    private JButton buttonSupport;
+    private JLabel LableName;
+    private JButton buttonLogOut;
+    private JTextField textField1;
+    private JTextField textField2;
+    private JTextField textField3;
+    private JButton buttonRemovePrinter;
     private JButton buttonGeneral;
     private JButton buttonHelper;
 
@@ -52,72 +50,88 @@ public class Setting extends JPanel{
 
     private JButton buttonAddUser;
     private JButton ButtonAddPrinter;
+    private JTable table1;
+    private JTable table2;
+    private JButton удалитьПолеButton;
+    private JButton добавитьПолеButton;
+    private JButton сохранитьШаблонСообщенияButton;
     private JButton buttonsavePrinters;
     private MainFrame parent;
     public Setting(MainFrame parent,LocalDate date) {
         this.parent = parent;
         add(mainPanel);
-        String formattedDate = date.format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));
-        textFielLicense.setText("Лицензия активирована, дата окончания - " + formattedDate);        // Инициализация таблицы пользователей
-        userModel = new UserTableModel();
-        tableUsers.setModel(userModel);
-        configureTable();
-        loadUsers();
-
-        // Инициализация таблицы принтеров
-        printerModel = new PrinterTableModel();
-        tablePrinter.setModel(printerModel);
-        configurePrintersTable();
-        loadPrinters();
-
-        // Убираем границы и фон кнопок
-        buttonHelper.setBorderPainted(false);
-        buttonHelper.setContentAreaFilled(false);
-        buttonHelper.setFocusPainted(false);
-        buttonHelper.setText(""); // Убираем текст, если он есть
-
-        buttonGeneral.setBorderPainted(false);
-        buttonGeneral.setContentAreaFilled(false);
-        buttonGeneral.setFocusPainted(false);
-        buttonGeneral.setText("");
-
-        buttonReport.setBorderPainted(false);
-        buttonReport.setContentAreaFilled(false);
-        buttonReport.setFocusPainted(false);
-        buttonReport.setText("");
 
 
-
-        // Настройка COM-портов
-        SerialPort[] ports = SerialPort.getCommPorts();
-        for (SerialPort port : ports) {
-            comboBoxSerialPort.addItem(port.getSystemPortName());
-        }
-
-        // Обработчики событий
-        ButtonOpenPort.addActionListener(this::handleOpenPort);
-        ButtonClosePort.addActionListener(this::handleClosePort);
+        buttonHome.addActionListener(e -> parent.showHome());
+        buttonSetting.addActionListener(e -> parent.showSettings());
+        buttonAdmin.addActionListener(e->parent.showAdmin());
+        buttonPrinter.addActionListener(e->parent.showGeneral());
+        buttonSupport.addActionListener(e -> parent.showSupport());
         buttonReport.addActionListener(e -> parent.showReport());
-        buttonGeneral.addActionListener(e -> parent.showGeneral());
-        buttonHelper.addActionListener(e->parent.showSupport());
+        buttonLogOut.addActionListener(e -> parent.logLogout());
 
-        buttonAddUser.addActionListener(e -> addNewUser());
-        buttonSave.addActionListener(e -> saveUsers());
 
-        setSize(600, 400);
-        ButtonAddPrinter.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                printerModel.addRow(new Object[]{null, "", "", 0, 0});
-
-            }
-        });
-        buttonsavePrinters.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                savePrinters();
-            }
-        });
+//        String formattedDate = date.format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));
+//        textFielLicense.setText("Лицензия активирована, дата окончания - " + formattedDate);        // Инициализация таблицы пользователей
+//        userModel = new UserTableModel();
+//        tableUsers.setModel(userModel);
+//        configureTable();
+//        loadUsers();
+//
+//        // Инициализация таблицы принтеров
+//        printerModel = new PrinterTableModel();
+//        tablePrinter.setModel(printerModel);
+//        configurePrintersTable();
+//        loadPrinters();
+//
+//        // Убираем границы и фон кнопок
+//        buttonHelper.setBorderPainted(false);
+//        buttonHelper.setContentAreaFilled(false);
+//        buttonHelper.setFocusPainted(false);
+//        buttonHelper.setText(""); // Убираем текст, если он есть
+//
+//        buttonGeneral.setBorderPainted(false);
+//        buttonGeneral.setContentAreaFilled(false);
+//        buttonGeneral.setFocusPainted(false);
+//        buttonGeneral.setText("");
+//
+//        buttonReport.setBorderPainted(false);
+//        buttonReport.setContentAreaFilled(false);
+//        buttonReport.setFocusPainted(false);
+//        buttonReport.setText("");
+//
+//
+//
+//        // Настройка COM-портов
+//        SerialPort[] ports = SerialPort.getCommPorts();
+//        for (SerialPort port : ports) {
+//            comboBoxSerialPort.addItem(port.getSystemPortName());
+//        }
+//
+//        // Обработчики событий
+//        ButtonOpenPort.addActionListener(this::handleOpenPort);
+//        ButtonClosePort.addActionListener(this::handleClosePort);
+//        buttonReport.addActionListener(e -> parent.showReport());
+//        buttonGeneral.addActionListener(e -> parent.showGeneral());
+//        buttonHelper.addActionListener(e->parent.showSupport());
+//
+//        buttonAddUser.addActionListener(e -> addNewUser());
+//        buttonSave.addActionListener(e -> saveUsers());
+//
+//        setSize(600, 400);
+//        ButtonAddPrinter.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                printerModel.addRow(new Object[]{null, "", "", 0, 0});
+//
+//            }
+//        });
+//        buttonsavePrinters.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                savePrinters();
+//            }
+//        });
 
     }
 
