@@ -103,7 +103,7 @@ public class General extends JPanel implements PrinterDataListener {
 //        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 //        pack();
         setVisible(true);
-        setFontForAllComponents(mainPanel, new Font("SansSerif", Font.PLAIN, 16));
+//        setFontForAllComponents(mainPanel, new Font("SansSerif", Font.PLAIN, 16));
 
         // Убираем границы и фон кнопок
         button1.setBorderPainted(false);
@@ -305,6 +305,15 @@ public class General extends JPanel implements PrinterDataListener {
                         }
                         new MainFrame(date).setVisible(true);
                     }
+                }
+            }
+        });
+        ButtonAddFieldInSample.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (visibleFieldsCount < 6) { // Максимум 6 полей (X0-X5)
+                    visibleFieldsCount++;
+                    setFieldsVisibility();
                 }
             }
         });

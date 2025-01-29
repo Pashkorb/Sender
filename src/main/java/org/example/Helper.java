@@ -24,7 +24,7 @@ public class Helper extends JPanel{
         this.parent = parent;
         add(mainPanel); // Добавляем панель из дизайнера
         // Инициализация формы
-        setFontForAllComponents(mainPanel, new Font("SansSerif", Font.PLAIN, 20));
+//        setFontForAllComponents(mainPanel, new Font("SansSerif", Font.PLAIN, 20));
 
 //        setSize(800, 600);
 
