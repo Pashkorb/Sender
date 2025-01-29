@@ -76,225 +76,207 @@ public class General extends JPanel implements PrinterDataListener {
         add(mainPanel); // Добавляем панель из дизайнера
         this.date=date;
 //
-//        setContentPane(panel1);
+//        setContentPane(mainPanel);
 //        setTitle("General");
 //        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 //        pack();
-        setVisible(true);
+//        setVisible(true);
 //        setFontForAllComponents(mainPanel, new Font("SansSerif", Font.PLAIN, 16));
 
         // Убираем границы и фон кнопок
-        button1.setBorderPainted(false);
-        button1.setContentAreaFilled(false);
-        button1.setFocusPainted(false);
-        button1.setText(""); // Убираем текст, если он есть
-
-        button2.setBorderPainted(false);
-        button2.setContentAreaFilled(false);
-        button2.setFocusPainted(false);
-        button2.setText("");
-
-        button3.setBorderPainted(false);
-        button3.setContentAreaFilled(false);
-        button3.setFocusPainted(false);
-        button3.setText("");
-
-        button4.setBorderPainted(false);
-        button4.setContentAreaFilled(false);
-        button4.setFocusPainted(false);
-        button4.setText("");
 
 
-        // Присваиваем имена текстовым полям
-            textFieldTextX0.setName("textFieldTextX0");
-            textFieldTextX1.setName("textFieldTextX1");
-            textFieldTextX2.setName("textFieldTextX2");
-            textFieldTextX3.setName("textFieldTextX3");
 
-        setFieldsVisibility();
-        
-            if (mainPanel == null) {
-                System.out.println("Основная панель (panel1) не инициализирована!");
-            } else {
-                System.out.println("Основная панель (panel1) инициализирована.");
-            }
+//        // Присваиваем имена текстовым полям
+//            textFieldTextX0.setName("textFieldTextX0");
+//            textFieldTextX1.setName("textFieldTextX1");
+//            textFieldTextX2.setName("textFieldTextX2");
+//            textFieldTextX3.setName("textFieldTextX3");
+//
+//        setFieldsVisibility();
+//
+//            if (mainPanel == null) {
+//                System.out.println("Основная панель (panel1) не инициализирована!");
+//            } else {
+//                System.out.println("Основная панель (panel1) инициализирована.");
+//            }
+//
+//            if (mainPanel == null) {
+//                System.out.println("Panel1 не инициализирована!");
+//            } else {
+//                System.out.println("Panel1 инициализирована.");
+//            }
+//        PrinterManager.addDataListener(this);
+//
+//            // Аналогично для остальных панелей...
+//
+//        // Обработчик для кнопки "Сохранить шаблон"
+//        ButtonSaveSample.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                saveTemplate();
+//            }
+//        });
+//
+//        // Обработчик для кнопки "Выбрать шаблон"
+//        ButtonSelectSample.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                selectTemplate();
+//            }
+//        });
+//
+//        ButtonSendDataForPrinter.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                // Проверяем, открыто ли соединение
+//                if (!PrinterManager.isConnectionOpen()) {
+//                    JOptionPane.showMessageDialog(null, "Соединение с принтером не установлено!", "Ошибка", JOptionPane.ERROR_MESSAGE);
+//                    return;
+//                }
+//
+//                if (CheckBox_CountPrint.isSelected()){
+//                    remainingCopies = Integer.parseInt(textFieldCountPrint.getText());
+//                    textFieldRemaindedPrinting.setText(String.valueOf(remainingCopies));
+//                }
+//                // Собираем данные из текстовых полей
+//
+//                List<String> printTasks = new ArrayList<>();
+//                if (!textFieldX0.getText().isEmpty()) {
+//                    printTasks.add(textFieldX0.getText());
+//                }
+//                if (!textFieldX1.getText().isEmpty()) {
+//                    printTasks.add(textFieldX1.getText());
+//                }
+//                if (!textFieldX2.getText().isEmpty()) {
+//                    printTasks.add(textFieldX2.getText());
+//                }
+//                if (!textFieldX3.getText().isEmpty()) {
+//                    printTasks.add(textFieldX3.getText());
+//                }
+//                if (!textFieldX4.getText().isEmpty()) {
+//                    printTasks.add(textFieldX4.getText());
+//                }
+//                if (!textFieldX5.getText().isEmpty()) {
+//                    printTasks.add(textFieldX5.getText());
+//                }
+//
+//
+//                // Проверяем, есть ли данные для отправки
+//                if (printTasks.isEmpty()) {
+//                    JOptionPane.showMessageDialog(null, "Нет данных для отправки!", "Ошибка", JOptionPane.ERROR_MESSAGE);
+//                    return;
+//                }
+//
+//                try {
+//                    // Подготавливаем команду для печати
+//                    Coder coder = new Coder();
+//                    PrinterCommand command = coder.preparePrintCommand(printTasks, "02"); // Используем код функции "02"
+//
+//                    // Подготавливаем команду для отправки
+//                    String preparedCommand = coder.prepareCommandForSending(command);
+//                    Logger.getInstance().log("[INFO] Подготовленная команда для отправки: " + preparedCommand);
+//                    System.out.println("[INFO] Подготовленная команда для отправки: " + preparedCommand);
+//
+//
+//                    // Отправляем данные через PrinterManager
+//                    byte[] data = preparedCommand.getBytes(StandardCharsets.US_ASCII);
+//                    PrinterManager.sendData(data);
+//
+//                    Logger.getInstance().log("[Send] "+preparedCommand);
+//
+//                    JOptionPane.showMessageDialog(null, "Данные успешно отправлены!", "Успех", JOptionPane.INFORMATION_MESSAGE);
+//                } catch (Exception ex) {
+//                    JOptionPane.showMessageDialog(null, "Ошибка при подготовке или отправке данных: " + ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+//                    ex.printStackTrace();
+//                }
+//            }
+//        });
+//        button3.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                parent.showSettings(); // Переключаемся на панель настроек
+//
+//            }
+//        });
 
-            if (mainPanel == null) {
-                System.out.println("Panel1 не инициализирована!");
-            } else {
-                System.out.println("Panel1 инициализирована.");
-            }
-        PrinterManager.addDataListener(this);
 
-            // Аналогично для остальных панелей...
-
-        // Обработчик для кнопки "Сохранить шаблон"
-        ButtonSaveSample.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                saveTemplate();
-            }
-        });
-
-        // Обработчик для кнопки "Выбрать шаблон"
-        ButtonSelectSample.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                selectTemplate();
-            }
-        });
-
-        ButtonSendDataForPrinter.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Проверяем, открыто ли соединение
-                if (!PrinterManager.isConnectionOpen()) {
-                    JOptionPane.showMessageDialog(null, "Соединение с принтером не установлено!", "Ошибка", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                if (CheckBox_CountPrint.isSelected()){
-                    remainingCopies = Integer.parseInt(textFieldCountPrint.getText());
-                    textFieldRemaindedPrinting.setText(String.valueOf(remainingCopies));
-                }
-                // Собираем данные из текстовых полей
-
-                List<String> printTasks = new ArrayList<>();
-                if (!textFieldX0.getText().isEmpty()) {
-                    printTasks.add(textFieldX0.getText());
-                }
-                if (!textFieldX1.getText().isEmpty()) {
-                    printTasks.add(textFieldX1.getText());
-                }
-                if (!textFieldX2.getText().isEmpty()) {
-                    printTasks.add(textFieldX2.getText());
-                }
-                if (!textFieldX3.getText().isEmpty()) {
-                    printTasks.add(textFieldX3.getText());
-                }
-                if (!textFieldX4.getText().isEmpty()) {
-                    printTasks.add(textFieldX4.getText());
-                }
-                if (!textFieldX5.getText().isEmpty()) {
-                    printTasks.add(textFieldX5.getText());
-                }
-
-
-                // Проверяем, есть ли данные для отправки
-                if (printTasks.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "Нет данных для отправки!", "Ошибка", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                try {
-                    // Подготавливаем команду для печати
-                    Coder coder = new Coder();
-                    PrinterCommand command = coder.preparePrintCommand(printTasks, "02"); // Используем код функции "02"
-
-                    // Подготавливаем команду для отправки
-                    String preparedCommand = coder.prepareCommandForSending(command);
-                    Logger.getInstance().log("[INFO] Подготовленная команда для отправки: " + preparedCommand);
-                    System.out.println("[INFO] Подготовленная команда для отправки: " + preparedCommand);
-
-
-                    // Отправляем данные через PrinterManager
-                    byte[] data = preparedCommand.getBytes(StandardCharsets.US_ASCII);
-                    PrinterManager.sendData(data);
-
-                    Logger.getInstance().log("[Send] "+preparedCommand);
-
-                    JOptionPane.showMessageDialog(null, "Данные успешно отправлены!", "Успех", JOptionPane.INFORMATION_MESSAGE);
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(null, "Ошибка при подготовке или отправке данных: " + ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
-                    ex.printStackTrace();
-                }
-            }
-        });
-        button3.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                parent.showSettings(); // Переключаемся на панель настроек
-
-            }
-        });
-
-
-        button2.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                parent.showReport(); // Переключаемся на панель настроек
-
-            }
-        });
-        ButtonStopPrinter.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                PrinterManager.sendStopCommand();
-            }
-        });
-        // Обработчики для кнопок добавления/удаления полей
-        ButtonAddField.addActionListener(e -> {
-            if (visibleFieldsCount < 6) { // Максимум 6 полей (X0-X5)
-                visibleFieldsCount++;
-                setFieldsVisibility();
-            }
-        });
-
-        ButtonRemoveField.addActionListener(e -> {
-            if (visibleFieldsCount > 3) { // Минимум 3 поля
-                visibleFieldsCount--;
-                setFieldsVisibility();
-            }
-        });
-        button1.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                parent.showSupport();
-            }
-        });
-        button4.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (CurrentUser.getLogin() != null) {
-                    // Логирование выхода
-                    String username = CurrentUser.getLogin();
-                    Logger.getInstance().logLogout(username);
-                    logLogout(); // Запись в БД
-                    CurrentUser.clear();
-
-                    // Закрываем главное окно
-                    Window window = SwingUtilities.getWindowAncestor(button4);
-                    if (window != null) {
-                        window.dispose();
-                    }
-
-                    // Открываем окно входа
-                    new Enter(date).setVisible(true);
-                } else {
-                    // Открываем диалог входа
-                    Enter enterDialog = new Enter(date);
-                    enterDialog.setVisible(true);
-
-                    // Если вход успешен, обновляем интерфейс
-                    if (CurrentUser.getLogin() != null) {
-                        Window window = SwingUtilities.getWindowAncestor(button4);
-                        if (window != null) {
-                            window.dispose();
-                        }
-                        new MainFrame(date).setVisible(true);
-                    }
-                }
-            }
-        });
-        ButtonAddFieldInSample.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (visibleFieldsCount < 6) { // Максимум 6 полей (X0-X5)
-                    visibleFieldsCount++;
-                    setFieldsVisibility();
-                }
-            }
-        });
+//        button2.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                parent.showReport(); // Переключаемся на панель настроек
+//
+//            }
+//        });
+//        ButtonStopPrinter.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                PrinterManager.sendStopCommand();
+//            }
+//        });
+//        // Обработчики для кнопок добавления/удаления полей
+//        ButtonAddField.addActionListener(e -> {
+//            if (visibleFieldsCount < 6) { // Максимум 6 полей (X0-X5)
+//                visibleFieldsCount++;
+//                setFieldsVisibility();
+//            }
+//        });
+//
+//        ButtonRemoveField.addActionListener(e -> {
+//            if (visibleFieldsCount > 3) { // Минимум 3 поля
+//                visibleFieldsCount--;
+//                setFieldsVisibility();
+//            }
+//        });
+//        button1.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                parent.showSupport();
+//            }
+//        });
+//        button4.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                if (CurrentUser.getLogin() != null) {
+//                    // Логирование выхода
+//                    String username = CurrentUser.getLogin();
+//                    Logger.getInstance().logLogout(username);
+//                    logLogout(); // Запись в БД
+//                    CurrentUser.clear();
+//
+//                    // Закрываем главное окно
+//                    Window window = SwingUtilities.getWindowAncestor(button4);
+//                    if (window != null) {
+//                        window.dispose();
+//                    }
+//
+//                    // Открываем окно входа
+//                    new Enter(date).setVisible(true);
+//                } else {
+//                    // Открываем диалог входа
+//                    Enter enterDialog = new Enter(date);
+//                    enterDialog.setVisible(true);
+//
+//                    // Если вход успешен, обновляем интерфейс
+//                    if (CurrentUser.getLogin() != null) {
+//                        Window window = SwingUtilities.getWindowAncestor(button4);
+//                        if (window != null) {
+//                            window.dispose();
+//                        }
+//                        new MainFrame(date).setVisible(true);
+//                    }
+//                }
+//            }
+//        });
+//        ButtonAddFieldInSample.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                if (visibleFieldsCount < 6) { // Максимум 6 полей (X0-X5)
+//                    visibleFieldsCount++;
+//                    setFieldsVisibility();
+//                }
+//            }
+//        });
     }
 
     private void logLogout() {

@@ -41,16 +41,16 @@ public class MainFrame extends JFrame {
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         // Инициализация панелей
         generalPanel = new General(this,date);
-        settingPanel = new Setting(this,date);
-        supportPanel=new Helper(this);
-        reportPanel=new Report(this);
+//        settingPanel = new Setting(this,date);
+//        supportPanel=new Helper(this);
+//        reportPanel=new Report(this);
 
         // Настройка CardLayout
         mainPanel = new JPanel(new CardLayout());
         mainPanel.add(generalPanel, "General");
-        mainPanel.add(settingPanel, "Settings");
-        mainPanel.add(reportPanel, "Report");
-        mainPanel.add(supportPanel,"Support");
+//        mainPanel.add(settingPanel, "Settings");
+//        mainPanel.add(reportPanel, "Report");
+//        mainPanel.add(supportPanel,"Support");
 
 
 
@@ -91,7 +91,7 @@ public class MainFrame extends JFrame {
 
     public void showGeneral() {
         ((CardLayout) mainPanel.getLayout()).show(mainPanel, "General");
-        generalPanel.loadPrintersToComboBox(); // Обновляем список при открытии
+//        generalPanel.loadPrintersToComboBox(); // Обновляем список при открытии
 
     }
 

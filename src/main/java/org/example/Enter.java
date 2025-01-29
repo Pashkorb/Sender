@@ -6,6 +6,7 @@ import org.example.Service.Logger;
 import org.mindrot.jbcrypt.BCrypt;
 
 import javax.swing.*;
+import java.awt.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,9 +27,17 @@ public class Enter extends JDialog { // Используем JDialog вмест�
         date=expirationDate;
 
         setContentPane(panel1);
+
+        panel1.getRootPane().setDefaultButton(ButtonEnter);
         setSize(1244, 588);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+
+        UIManager.put("Panel.background", Color.WHITE);
+        UIManager.put("Button.background", Color.WHITE);
+        UIManager.put("TextField.background", Color.WHITE);
+        UIManager.put("TextArea.background", Color.WHITE);
+        UIManager.put("Label.background", Color.WHITE);
 
         ButtonEnter.addActionListener(e -> {
             System.out.println("[ENTER] Нажата кнопка входа");

@@ -149,12 +149,14 @@ public class DatabaseManager {
     private void createAdminUser(Connection connection) {
         String sql = "INSERT INTO Пользователи (Фио, Роль, Логин, Пароль) VALUES (?, ?, ?, ?)";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) { // Используем try-with-resources
-            String password = "@MirMarking_Prog";
+//            String password = "@MirMarking_Prog";
+            String password = "11";
             String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
 
             pstmt.setString(1, "");
             pstmt.setString(2, "Admin");
-            pstmt.setString(3, "admin");
+//            pstmt.setString(3, "admin");
+            pstmt.setString(3, "11");
             pstmt.setString(4, hashedPassword);
             pstmt.executeUpdate();
             log("Администратор создан");
