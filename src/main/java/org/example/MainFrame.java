@@ -22,7 +22,7 @@ public class MainFrame extends JFrame {
 
     private Helper supportPanel;
 
-
+    private Home homePanel;
 
     private LocalDate date;
 
@@ -40,6 +40,7 @@ public class MainFrame extends JFrame {
         // Развернуть окно на весь экран
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         // Инициализация панелей
+        homePanel=new Home(this);
         generalPanel = new General(this,date);
 //        settingPanel = new Setting(this,date);
 //        supportPanel=new Helper(this);
@@ -47,6 +48,7 @@ public class MainFrame extends JFrame {
 
         // Настройка CardLayout
         mainPanel = new JPanel(new CardLayout());
+        mainPanel.add(homePanel,"Home");
         mainPanel.add(generalPanel, "General");
 //        mainPanel.add(settingPanel, "Settings");
 //        mainPanel.add(reportPanel, "Report");
@@ -55,7 +57,7 @@ public class MainFrame extends JFrame {
 
 
         add(mainPanel);
-        showGeneral();
+        showHome();
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -75,7 +77,7 @@ public class MainFrame extends JFrame {
         CurrentUser.clear();
         System.exit(0);
     }
-    private void logLogout() {
+    public void logLogout() {
         System.out.println("[MAIN FRAME] Логирование выхода пользователя: " + CurrentUser.getLogin());
 
         try (Connection conn = DatabaseManager.getInstance().getConnection();
@@ -96,10 +98,13 @@ public class MainFrame extends JFrame {
     }
 
     public void showSettings() {
+
         ((CardLayout) mainPanel.getLayout()).show(mainPanel, "Settings");
     }
 
-
+    public void showHome(){
+        ((CardLayout) mainPanel.getLayout()).show(mainPanel,"Home");
+    }
 
 
 
@@ -111,4 +116,5 @@ public class MainFrame extends JFrame {
     public void showSupport() {
         ((CardLayout)mainPanel.getLayout()).show(mainPanel,"Support");
     }
+
 }

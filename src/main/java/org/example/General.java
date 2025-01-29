@@ -5,14 +5,9 @@ import org.example.Service.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class General extends JPanel implements PrinterDataListener {
@@ -34,9 +29,9 @@ public class General extends JPanel implements PrinterDataListener {
     private JTextField textFieldTextX3;
     private JTextField textFieldTextX1;
     private JButton ButtonSaveSample;
-    private JButton button1;
-    private JButton button2;
-    private JButton button3;
+    private JButton buttonLogOut;
+    private JButton buttonStartPrint;
+    private JButton ButtonUppdataMessage;
     private JButton button4;
     private JTextField textFieldRemaindedPrinting;
     private JTextField textFieldNameFieldX1;
@@ -54,6 +49,19 @@ public class General extends JPanel implements PrinterDataListener {
     private JLabel LabelX0;
 
     private JPanel mainPanel; // Главная панель из дизайнера
+    private JButton buttonHome;
+    private JButton buttonSetting;
+    private JButton buttonAdmin;
+    private JButton buttonPrinter;
+    private JButton buttonSupport;
+    private JButton buttonReport;
+    private JLabel LableName;
+    private JTable table1;
+    private JComboBox comboBox1;
+    private JCheckBox печатьПоКоличествуCheckBox;
+    private JTextField textField2;
+    private JTextField TextField;
+    private JTextField статусПринтераTextField;
     private JTextField textFieldX5;
     private JLabel LabelX5;
     private JTextField textFieldTextX4;
@@ -73,8 +81,17 @@ public class General extends JPanel implements PrinterDataListener {
 
     public General(MainFrame parent, LocalDate date) {
         this.parent = parent;
+        this.date = date;
         add(mainPanel); // Добавляем панель из дизайнера
-        this.date=date;
+        LableName.setText(CurrentUser.getName());
+
+        buttonHome.addActionListener(e -> parent.showHome());
+        buttonSetting.addActionListener(e -> parent.showSettings());
+//        buttonAdmin.addActionListener(e->parent.showHome());
+        buttonPrinter.addActionListener(e->parent.showGeneral());
+        buttonSupport.addActionListener(e -> parent.showSupport());
+        buttonReport.addActionListener(e -> parent.showReport());
+        buttonLogOut.addActionListener(e -> parent.logLogout());
 //
 //        setContentPane(mainPanel);
 //        setTitle("General");
@@ -84,7 +101,6 @@ public class General extends JPanel implements PrinterDataListener {
 //        setFontForAllComponents(mainPanel, new Font("SansSerif", Font.PLAIN, 16));
 
         // Убираем границы и фон кнопок
-
 
 
 //        // Присваиваем имена текстовым полям
@@ -277,8 +293,8 @@ public class General extends JPanel implements PrinterDataListener {
 //                }
 //            }
 //        });
-    }
 
+    }
     private void logLogout() {
         try (Connection conn = DatabaseManager.getInstance().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(

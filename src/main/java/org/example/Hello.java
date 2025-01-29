@@ -68,6 +68,7 @@ public class Hello extends JFrame{
     }
 
     public void enter() {
+        dispose();
         LocalDate expirationDate = LocalDate.of(2026, 12, 12);
 
         LicenseManager.generateLicenseKey(expirationDate);

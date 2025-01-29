@@ -60,7 +60,7 @@ public class Enter extends JDialog { // Используем JDialog вмест�
 
         try (Connection conn = DatabaseManager.getInstance().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(
-                     "SELECT id, Пароль FROM Пользователи WHERE Логин = ?")) {
+                     "SELECT id, Пароль, Фио FROM Пользователи WHERE Логин = ?")) {
 
             pstmt.setString(1, login);
             ResultSet rs = pstmt.executeQuery();
@@ -69,8 +69,10 @@ public class Enter extends JDialog { // Используем JDialog вмест�
                 String storedHash = rs.getString("Пароль");
                 if (BCrypt.checkpw(password, storedHash)) {
                     int userId = rs.getInt("id");
+                    String name = rs.getString("Фио");
                     CurrentUser.setId(userId);
                     CurrentUser.setLogin(login);
+                    CurrentUser.setName(name);
 
                     // Логируем вход
                     Logger.getInstance().logLogin(login);
