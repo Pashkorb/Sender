@@ -57,20 +57,54 @@ public class PrinterTableModel extends AbstractTableModel {
                 default:
                     data.get(row)[col + 1] = value;
             }
+            modified.set(row, true);
+            fireTableCellUpdated(row, col);
         } catch (NumberFormatException e) {
-            data.get(row)[col + 1] = 0; // Значение по умолчанию при ошибке
+            // Можно добавить обработку ошибки ввода
+            data.get(row)[col + 1] = 0;
         }
-        modified.set(row, true);
-        fireTableCellUpdated(row, col);
     }
 
     public void addRow(Object[] row) {
-        data.add(row);
+        // Гарантируем правильный формат строки: [id, name, series, symbols, hours]
+        Object[] formattedRow = new Object[5];
+        System.arraycopy(row, 0, formattedRow, 0, Math.min(row.length, 5));
+        data.add(formattedRow);
         modified.add(false);
         fireTableRowsInserted(data.size()-1, data.size()-1);
     }
 
     public Object[] getRow(int row) {
         return data.get(row);
+    }
+
+    public void removeRow(int row) {
+        if (row >= 0 && row < data.size()) {
+            data.remove(row);
+            modified.remove(row);
+            fireTableRowsDeleted(row, row);
+        }
+    }
+
+    public void setRowCount(int rowCount) {
+        if (rowCount == 0) {
+            int oldSize = data.size();
+            if (oldSize > 0) { // Добавляем проверку на положительный размер
+                data.clear();
+                modified.clear();
+                fireTableRowsDeleted(0, oldSize - 1);
+            }
+        }
+    }
+
+    // Дополнительные методы для работы с данными
+    public void setModified(int row, boolean status) {
+        if (row >= 0 && row < modified.size()) {
+            modified.set(row, status);
+        }
+    }
+
+    public boolean isModified(int row) {
+        return row >= 0 && row < modified.size() && modified.get(row);
     }
 }

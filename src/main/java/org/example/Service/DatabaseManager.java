@@ -1,5 +1,6 @@
 package org.example.Service;
 
+import org.example.Model.TemplateField;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.nio.file.Files;
@@ -8,6 +9,8 @@ import java.nio.file.Paths;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DatabaseManager {
     private static final String APP_DATA_FOLDER = "FastMarking";
@@ -178,4 +181,33 @@ public class DatabaseManager {
             e.printStackTrace();
         }
     }
+
+
+    public List<TemplateField> loadTemplateFields(String templateName) throws SQLException {
+        List<TemplateField> fields = new ArrayList<>();
+        String sql = "SELECT p.Номер, p.Наименование_поля, p.Текст " +
+                "FROM Поля p " +
+                "JOIN Шаблоны s ON p.Шаблон_id = s.id " +
+                "WHERE s.Наименование = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, templateName);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                fields.add(new TemplateField(
+                        rs.getInt("Номер"),
+                        rs.getString("Наименование_поля"),
+                        rs.getString("Текст")
+                ));
+            }
+        }
+        return fields;
+    }
+
+
+
+
+
 }

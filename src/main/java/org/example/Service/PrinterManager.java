@@ -1,67 +1,62 @@
 package org.example.Service;
 
-
-import com.fazecast.jSerialComm.SerialPort;
-import java.util.HashMap;
-import java.util.Map;
-
-// PrinterManager.java
 import com.fazecast.jSerialComm.*;
 import org.example.Coder;
-import org.example.General;
 import org.example.Model.PrinterDataListener;
 import org.example.PrinterCommand;
 
 import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PrinterManager {
     private static SerialPort serialPort;
     private static Socket ethernetSocket;
     private static BufferedReader ethernetReader;
-    private static List<PrinterDataListener> listeners = new ArrayList<>();
+    private static final List<PrinterDataListener> listeners = new ArrayList<>();
     private static Thread ethernetReadThread;
-    private static boolean running = true;
+    private static final AtomicBoolean running = new AtomicBoolean(false);
 
-    public static void addDataListener(PrinterDataListener listener) {
-        listeners.add(listener);
+    // Регистрация слушателей
+    public static synchronized void addDataListener(PrinterDataListener listener) {
+        if (!listeners.contains(listener)) {
+            listeners.add(listener);
+        }
     }
 
-    public static void removeDataListener(PrinterDataListener listener) {
+    public static synchronized void removeDataListener(PrinterDataListener listener) {
         listeners.remove(listener);
     }
 
-    private static void notifyDataReceived(String data) {
-        System.out.println(data);
-        Logger.getInstance().log("[Get] "+data);
-        for (PrinterDataListener listener : listeners) {
-            listener.onDataReceived(data);
-        }
+    private static synchronized void notifyDataReceived(String data) {
+        Logger.getInstance().log("[RX] " + data);
+        listeners.forEach(listener -> listener.onDataReceived(data));
     }
 
-    private static void notifyStatus(String status) {
-        for (PrinterDataListener listener : listeners) {
-            listener.onStatusUpdate(status);
-        }
+    private static synchronized void notifyStatus(String status) {
+        listeners.forEach(listener -> listener.onStatusUpdate(status));
     }
 
-    public static void openPort(String portName, String ip, int port) throws Exception {
-        if (portName != null) {
-            openSerialPort(portName);
-        } else {
-            openEthernetPort(ip, port);
-        }
-    }
-
-    private static void openSerialPort(String portName) throws Exception {
+    // Управление портами
+    public static void openCOMPort(String portName) throws Exception {
+        closePort();
         serialPort = SerialPort.getCommPort(portName);
+
         if (!serialPort.openPort()) {
-            throw new Exception("Failed to open serial port");
+            throw new IOException("Не удалось открыть COM-порт: " + portName);
         }
 
         serialPort.setBaudRate(9600);
+        serialPort.setComPortTimeouts(
+                SerialPort.TIMEOUT_READ_SEMI_BLOCKING,
+                100,
+                0
+        );
+
         serialPort.addDataListener(new SerialPortDataListener() {
             @Override
             public int getListeningEvents() {
@@ -73,80 +68,109 @@ public class PrinterManager {
                 try {
                     byte[] buffer = new byte[serialPort.bytesAvailable()];
                     int numRead = serialPort.readBytes(buffer, buffer.length);
-                    String data = new String(buffer, 0, numRead, StandardCharsets.US_ASCII);
-                    notifyDataReceived(data);
+                    if (numRead > 0) {
+                        notifyDataReceived(new String(buffer, 0, numRead, StandardCharsets.US_ASCII));
+                    }
                 } catch (Exception e) {
-                    notifyStatus("Serial read error: " + e.getMessage());
+                    notifyStatus("Ошибка чтения COM: " + e.getMessage());
                 }
             }
         });
+        running.set(true);
+        notifyStatus("COM-порт открыт: " + portName);
     }
 
-    private static void openEthernetPort(String ip, int port) throws Exception {
-        ethernetSocket = new Socket(ip, port);
-        ethernetReader = new BufferedReader(
-                new InputStreamReader(ethernetSocket.getInputStream(), StandardCharsets.US_ASCII));
+    public static void openEthernetPort(String ip, int port) throws Exception {
+        closePort();
+        ethernetSocket = new Socket();
+        ethernetSocket.connect(new InetSocketAddress(ip, port), 3000);
 
+        if (!ethernetSocket.isConnected()) {
+            throw new IOException("Не удалось подключиться к " + ip + ":" + port);
+        }
+
+        ethernetReader = new BufferedReader(
+                new InputStreamReader(ethernetSocket.getInputStream(), StandardCharsets.US_ASCII)
+        );
+
+        running.set(true);
         ethernetReadThread = new Thread(() -> {
             try {
-                while (running) {
-                    if (ethernetReader.ready()) {
-
-
-                        String data = ethernetReader.readLine();
-                        if (data != null) notifyDataReceived(data);
+                while (running.get()) {
+                    String data = ethernetReader.readLine();
+                    if (data != null) {
+                        notifyDataReceived(data);
                     }
-                    Thread.sleep(150);
                 }
             } catch (Exception e) {
-                notifyStatus("Ethernet read error: " + e.getMessage());
+                if (running.get()) {
+                    notifyStatus("Ошибка чтения Ethernet: " + e.getMessage());
+                }
             }
         });
         ethernetReadThread.start();
+        notifyStatus("Ethernet подключение установлено: " + ip + ":" + port);
     }
 
-    public static void closePort() {
-        running = false;
+    public static synchronized void closePort() {
+        running.set(false);
+
         if (serialPort != null && serialPort.isOpen()) {
+            serialPort.removeDataListener();
             serialPort.closePort();
+            serialPort = null;
+            notifyStatus("COM-порт закрыт");
         }
+
         if (ethernetSocket != null && !ethernetSocket.isClosed()) {
             try {
                 ethernetSocket.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                Logger.getInstance().logError("Ошибка закрытия сокета: " + e.getMessage());
             }
+            ethernetSocket = null;
+            notifyStatus("Ethernet подключение закрыто");
+        }
+
+        if (ethernetReadThread != null) {
+            try {
+                ethernetReadThread.join(500);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            ethernetReadThread = null;
         }
     }
 
-    public static void sendData(byte[] data) throws IOException {
+    // Отправка данных
+    public static synchronized void sendData(byte[] data) throws IOException {
         if (serialPort != null && serialPort.isOpen()) {
-
-            serialPort.writeBytes(data, data.length);
+            int result = serialPort.writeBytes(data, data.length);
+            if (result == -1) {
+                throw new IOException("Ошибка записи в COM-порт");
+            }
         } else if (ethernetSocket != null && ethernetSocket.isConnected()) {
             OutputStream out = ethernetSocket.getOutputStream();
             out.write(data);
             out.flush();
+        } else {
+            throw new IOException("Нет активного подключения");
         }
     }
 
     public static void sendStopCommand() {
         try {
             Coder coder = new Coder();
-            PrinterCommand command = new PrinterCommand("03", ""); // Код функции 03
+            PrinterCommand command = new PrinterCommand("03", "");
             String formattedCommand = coder.prepareCommandForSending(command);
             sendData(formattedCommand.getBytes(StandardCharsets.US_ASCII));
-        } catch (IOException e) {
+        } catch (Exception e) {
             notifyStatus("Ошибка отправки STOP: " + e.getMessage());
         }
     }
 
-    public static boolean isConnectionOpen() {
-        if (serialPort != null && serialPort.isOpen()) {
-            return true;
-        } else if (ethernetSocket != null && ethernetSocket.isConnected()) {
-            return true;
-        }
-        return false;
+    public static synchronized boolean isConnectionOpen() {
+        return (serialPort != null && serialPort.isOpen()) ||
+                (ethernetSocket != null && ethernetSocket.isConnected());
     }
 }

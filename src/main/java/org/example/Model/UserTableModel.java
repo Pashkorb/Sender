@@ -66,4 +66,21 @@ public class UserTableModel extends AbstractTableModel {
     public Object[] getRow(int row) {
         return data.get(row);
     }
+
+    public void removeRow(int row) {
+        if (row >= 0 && row < data.size()) {
+            data.remove(row);
+            modified.remove(row);
+            fireTableRowsDeleted(row, row);
+        }
+    }
+
+    public void setRowCount(int rowCount) {
+        if (rowCount == 0) {
+            int oldSize = data.size();
+            data.clear();
+            modified.clear();
+            fireTableRowsDeleted(0, oldSize-1);
+        }
+    }
 }

@@ -1,5 +1,7 @@
 package org.example;
 
+import org.example.Service.CurrentUser;
+
 import javax.swing.*;
 import java.time.LocalDate;
 
@@ -26,5 +28,14 @@ public class Admin extends JPanel{
         this.parent = parent;
         this.date = date;
         add(mainPanel); // Добавляем панель из дизайнера
+        LableName.setText(CurrentUser.getName());
+
+        buttonHome.addActionListener(e -> parent.showHome());
+        buttonSetting.addActionListener(e -> parent.showSettings());
+        buttonAdmin.addActionListener(e->parent.showAdmin());
+        buttonPrinter.addActionListener(e->parent.showGeneral());
+        buttonSupport.addActionListener(e -> parent.showSupport());
+        buttonReport.addActionListener(e -> parent.showReport());
+        buttonLogOut.addActionListener(e -> parent.logLogout());
     }
 }

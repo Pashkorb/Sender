@@ -1,25 +1,34 @@
 package org.example;
 
+import com.fazecast.jSerialComm.SerialPort;
 import org.example.Model.PrinterTableModel;
+import org.example.Model.TemplateField;
+import org.example.Model.TemplateTableModel;
 import org.example.Model.UserTableModel;
 import org.example.Service.DatabaseManager;
 import org.example.Service.Logger;
 import org.example.Service.PrinterManager;
+import org.example.Service.UserRole;
 import org.mindrot.jbcrypt.BCrypt;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.*;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 
 public class Setting extends JPanel{
+    private TemplateTableModel templateModel;
     private UserTableModel userModel;
     private JTextField textFielLicense;
     private JComboBox comboBoxSerialPort;
     private JCheckBox COMPortCheckBox;
+    private final Logger logger = Logger.getInstance(); // Добавляем логгер
+
     private JTextField textFieldIPAdress;
     private JCheckBox ethernetCheckBox;
     private JTextField textFieldPrinterPort;
@@ -37,8 +46,6 @@ public class Setting extends JPanel{
     private JButton buttonSupport;
     private JLabel LableName;
     private JButton buttonLogOut;
-    private JTextField textField1;
-    private JTextField textField2;
     private JTextField textField3;
     private JButton buttonRemovePrinter;
     private JButton buttonGeneral;
@@ -48,13 +55,13 @@ public class Setting extends JPanel{
 
     private JButton buttonSave;
 
+    private JButton buttonSaveSample;
     private JButton buttonAddUser;
     private JButton ButtonAddPrinter;
-    private JTable table1;
+    private JButton ButtonAddField;
+    private JButton ButtonRemoveField;
     private JTable table2;
-    private JButton удалитьПолеButton;
-    private JButton добавитьПолеButton;
-    private JButton сохранитьШаблонСообщенияButton;
+
     private JButton buttonsavePrinters;
     private MainFrame parent;
     public Setting(MainFrame parent,LocalDate date) {
@@ -71,19 +78,37 @@ public class Setting extends JPanel{
         buttonLogOut.addActionListener(e -> parent.logLogout());
 
 
-//        String formattedDate = date.format(DateTimeFormatter.ofPattern("yyyy.MM.dd"));
-//        textFielLicense.setText("Лицензия активирована, дата окончания - " + formattedDate);        // Инициализация таблицы пользователей
-//        userModel = new UserTableModel();
-//        tableUsers.setModel(userModel);
-//        configureTable();
-//        loadUsers();
-//
-//        // Инициализация таблицы принтеров
-//        printerModel = new PrinterTableModel();
-//        tablePrinter.setModel(printerModel);
-//        configurePrintersTable();
-//        loadPrinters();
-//
+        ButtonAddPrinter.addActionListener(e -> addPrinter());
+        buttonRemovePrinter.addActionListener(e -> removePrinter());
+        ButtonOpenPort.addActionListener(this::handleOpenPort);
+        ButtonClosePort.addActionListener(this::handleClosePort);
+
+
+        // Настройка COM-портов
+        updateComPorts();
+
+
+
+
+
+        // Инициализация таблицы принтеров
+        printerModel = new PrinterTableModel();
+        tablePrinter.setModel(printerModel);
+        configurePrintersTable();
+        loadPrinters();
+
+
+
+        // Инициализация таблицы шаблонов
+        templateModel = new TemplateTableModel();
+        table2.setModel(templateModel);
+        configureTemplateTable();
+
+        // Добавляем обработчики
+        ButtonAddField.addActionListener(e -> addTemplateField());
+        ButtonRemoveField.addActionListener(e -> removeTemplateField());
+        buttonSaveSample.addActionListener(e -> saveTemplate());
+
 //        // Убираем границы и фон кнопок
 //        buttonHelper.setBorderPainted(false);
 //        buttonHelper.setContentAreaFilled(false);
@@ -115,8 +140,7 @@ public class Setting extends JPanel{
 //        buttonGeneral.addActionListener(e -> parent.showGeneral());
 //        buttonHelper.addActionListener(e->parent.showSupport());
 //
-//        buttonAddUser.addActionListener(e -> addNewUser());
-//        buttonSave.addActionListener(e -> saveUsers());
+
 //
 //        setSize(600, 400);
 //        ButtonAddPrinter.addActionListener(new ActionListener() {
@@ -133,78 +157,180 @@ public class Setting extends JPanel{
 //            }
 //        });
 
+        buttonsavePrinters.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                savePrinters();
+            }
+        });
+    }
+
+    private void saveTemplate() {
+        String templateName = JOptionPane.showInputDialog("Введите название шаблона:");
+        if (templateName == null || templateName.trim().isEmpty()) {
+            showError("Название шаблона не может быть пустым");
+            return;
+        }
+
+        if (templateModel.getRowCount() == 0) {
+            showError("Добавьте хотя бы одно поле в шаблон");
+            return;
+        }
+
+        try (Connection conn = DatabaseManager.getInstance().getConnection()) {
+            conn.setAutoCommit(false);
+
+            // Сохраняем основной шаблон
+            int templateId = saveMainTemplate(conn, templateName);
+
+            // Сохраняем поля шаблона
+            saveTemplateFields(conn, templateId);
+
+            conn.commit();
+            showInfo("Шаблон успешно сохранен!");
+        } catch (SQLException ex) {
+            showError("Ошибка сохранения: " + ex.getMessage());
+        }
+    }
+
+    private int saveMainTemplate(Connection conn, String name) throws SQLException {
+        String sql = "INSERT INTO Шаблоны (Наименование, Поля) VALUES (?, ?)";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            pstmt.setString(1, name);
+            pstmt.setString(2, ""); // Для обратной совместимости
+            pstmt.executeUpdate();
+
+            ResultSet rs = pstmt.getGeneratedKeys();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+            throw new SQLException("Не удалось получить ID шаблона");
+        }
+    }
+
+    private void saveTemplateFields(Connection conn, int templateId) throws SQLException {
+        String sql = "INSERT INTO Поля (Шаблон_id, Номер, Наименование_поля, Текст) VALUES (?,?,?,?)";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            for (int i = 0; i < templateModel.getRowCount(); i++) {
+                TemplateField field = templateModel.getFieldAt(i);
+                pstmt.setInt(1, templateId);
+                pstmt.setInt(2, field.getNumber());
+                pstmt.setString(3, field.getFieldName());
+                pstmt.setString(4, field.getText());
+                pstmt.addBatch();
+            }
+            pstmt.executeBatch();
+        }
+    }
+    private void configureTemplateTable() {
+        // Установите редакторы для колонок
+        table2.setDefaultEditor(String.class, new DefaultCellEditor(new JTextField()));
+        table2.setDefaultEditor(Integer.class, new DefaultCellEditor(new JTextField()));
+
+        table2.getColumnModel().getColumn(0).setPreferredWidth(100);
+        table2.getColumnModel().getColumn(1).setPreferredWidth(200);
+        table2.getColumnModel().getColumn(2).setPreferredWidth(400);
+    }
+
+    private void addTemplateField() {
+        templateModel.addField(new TemplateField(
+                templateModel.getRowCount() + 1,
+                "Новое поле",
+                ""
+        ));
+    }
+
+    private void removeTemplateField() {
+        int selectedRow = table2.getSelectedRow();
+        if (selectedRow >= 0) {
+            templateModel.removeField(selectedRow);
+        }
+    }
+    private void updateComPorts() {
+        comboBoxSerialPort.removeAllItems();
+        SerialPort[] ports = SerialPort.getCommPorts();
+        for (SerialPort port : ports) {
+            comboBoxSerialPort.addItem(port.getSystemPortName());
+        }
+    }
+
+    private void configureTable() {
+        // Настройка выпадающего списка для ролей
+        JComboBox<UserRole> roleComboBox = new JComboBox<>(UserRole.values());
+        tableUsers.getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(roleComboBox));
+
+        // Рендерер для паролей
+        tableUsers.setDefaultRenderer(String.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                                                           boolean isSelected, boolean hasFocus, int row, int column) {
+                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                if (column == 3) { // Колонка с паролем
+                    setText("********");
+                }
+                return c;
+            }
+        });
+    }
+
+    private void addPrinter() {
+        printerModel.addRow(new Object[]{
+                null,  // id
+                "",    // Наименование
+                "",    // Серия
+                0,     // Количество символов
+                0      // Часы работы
+        });
+    }
+
+    private void removePrinter() {
+        int selectedRow = tablePrinter.getSelectedRow();
+        if (selectedRow >= 0) {
+            printerModel.removeRow(selectedRow);
+        }
     }
 
     private void savePrinters() {
         try (Connection conn = DatabaseManager.getInstance().getConnection()) {
             conn.setAutoCommit(false);
-            Logger logger = Logger.getInstance();
 
             for (int i = 0; i < printerModel.getRowCount(); i++) {
                 Object[] row = printerModel.getRow(i);
-                Integer id = (Integer) row[0];
 
-                // Используем безопасное преобразование типов
-                String name = row[1] != null ? row[1].toString() : "";
-                String series = row[2] != null ? row[2].toString() : "";
-
-                // Преобразуем числовые значения с проверкой
-                int symbols = 0;
-                try {
-                    symbols = Integer.parseInt(row[3].toString());
-                } catch (NumberFormatException | NullPointerException e) {
-                    showError("Некорректное количество символов в строке " + (i+1));
+                if (row[1] == null || ((String) row[1]).trim().isEmpty()) {
+                    showError("Введите наименование принтера в строке " + (i+1));
                     return;
                 }
 
-                int hours = 0;
-                try {
-                    hours = Integer.parseInt(row[4].toString());
-                } catch (NumberFormatException | NullPointerException e) {
-                    showError("Некорректное количество часов в строке " + (i+1));
-                    return;
-                }
+                String sql = row[0] == null ?
+                        "INSERT INTO Принтеры (Наименование, Серия, КоличествоСимволов, ЧасыРаботы) VALUES (?,?,?,?)" :
+                        "UPDATE Принтеры SET Наименование=?, Серия=?, КоличествоСимволов=?, ЧасыРаботы=? WHERE id=?";
 
-                if (name.trim().isEmpty()) {
-                    showError("Наименование не может быть пустым в строке " + (i+1));
-                    return;
-                }
+                try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+                    pstmt.setString(1, (String) row[1]);
+                    pstmt.setString(2, (String) row[2]);
+                    pstmt.setInt(3, (Integer) row[3]);
+                    pstmt.setInt(4, (Integer) row[4]);
 
-                if (id == null) {
-                    try (PreparedStatement pstmt = conn.prepareStatement(
-                            "INSERT INTO Принтеры (Наименование, Серия, КоличествоСимволов, ЧасыРаботы) VALUES (?, ?, ?, ?)")) {
-                        pstmt.setString(1, name.trim());
-                        pstmt.setString(2, series.trim());
-                        pstmt.setInt(3, symbols);
-                        pstmt.setInt(4, hours);
-                        pstmt.executeUpdate();
+                    if (row[0] != null) {
+                        pstmt.setInt(5, (Integer) row[0]);
                     }
-                } else {
-                    try (PreparedStatement pstmt = conn.prepareStatement(
-                            "UPDATE Принтеры SET Наименование=?, Серия=?, КоличествоСимволов=?, ЧасыРаботы=? WHERE id=?")) {
-                        pstmt.setString(1, name.trim());
-                        pstmt.setString(2, series.trim());
-                        pstmt.setInt(3, symbols);
-                        pstmt.setInt(4, hours);
-                        pstmt.setInt(5, id);
-                        pstmt.executeUpdate();
-                    }
+
+                    pstmt.executeUpdate();
                 }
             }
             conn.commit();
-            logger.log("Данные принтеров успешно сохранены");
+            showInfo("Данные успешно сохранены!");
         } catch (SQLException ex) {
-            showError("Ошибка сохранения принтеров: " + ex.getMessage());
-            Logger.getInstance().logError("Ошибка сохранения принтеров: " + ex.getMessage());
+            showError("Ошибка сохранения: " + ex.getMessage());
         }
     }
-
     private void loadPrinters() {
         try (Connection conn = DatabaseManager.getInstance().getConnection();
              Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT id, Наименование, Серия, КоличествоСимволов, ЧасыРаботы FROM Принтеры")) {
+             ResultSet rs = stmt.executeQuery("SELECT * FROM Принтеры")) {
 
-            printerModel = new PrinterTableModel();
+            printerModel.setRowCount(0);
             while (rs.next()) {
                 Object[] row = {
                         rs.getInt("id"),
@@ -215,25 +341,21 @@ public class Setting extends JPanel{
                 };
                 printerModel.addRow(row);
             }
-            tablePrinter.setModel(printerModel);
         } catch (SQLException ex) {
             showError("Ошибка загрузки принтеров: " + ex.getMessage());
         }
     }
 
-
     private void configurePrintersTable() {
-        // Редактор для числовых колонок
+        // Настройка редакторов для числовых колонок
         tablePrinter.setDefaultEditor(Integer.class, new DefaultCellEditor(new JTextField()) {
             @Override
             public boolean stopCellEditing() {
                 try {
-                    String value = getCellEditorValue().toString();
-                    if (!value.isEmpty()) Integer.parseInt(value);
+                    Integer.parseInt(getCellEditorValue().toString());
                     return super.stopCellEditing();
                 } catch (NumberFormatException e) {
-                    JOptionPane.showMessageDialog(tablePrinter,
-                            "Введите целое число", "Ошибка", JOptionPane.ERROR_MESSAGE);
+                    showError("Введите целое число");
                     return false;
                 }
             }
@@ -244,33 +366,6 @@ public class Setting extends JPanel{
         rightRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
         tablePrinter.getColumnModel().getColumn(2).setCellRenderer(rightRenderer);
         tablePrinter.getColumnModel().getColumn(3).setCellRenderer(rightRenderer);
-    }
-
-    private void configureTable() {
-        tableUsers.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object value,
-                                                           boolean isSelected, boolean hasFocus,
-                                                           int row, int column) {
-                Component c = super.getTableCellRendererComponent(table, value, isSelected,
-                        hasFocus, row, column);
-                int modelColumn = table.convertColumnIndexToModel(column);
-                if (modelColumn == 3) {
-                    // Отображаем звездочки только для загруженных паролей
-                    UserData data = new UserData(userModel.getRow(row));
-                    if (data.password.equals("********")) {
-                        setText("********");
-                    } else {
-                        setText(data.password); // Показываем реальный пароль для новых или измененных
-                    }
-                }
-                return c;
-            }
-        });
-
-        tableUsers.getTableHeader().setReorderingAllowed(false);
-        tableUsers.setAutoCreateRowSorter(true);
-        System.out.println("[LOG] Рендерер для таблицы настроен");
     }
 
     private void addNewUser() {
@@ -305,40 +400,52 @@ public class Setting extends JPanel{
             showError("Ошибка загрузки пользователей: " + ex.getMessage());
         }
     }
+
+    // В класс Setting добавить:
+    private void removeUser() {
+        int selectedRow = tableUsers.getSelectedRow();
+        if (selectedRow >= 0) {
+            userModel.removeRow(selectedRow);
+        }
+    }
+
+    // В XML добавить кнопку удаления
     private void saveUsers() {
-        System.out.println("[LOG] Начало сохранения пользователей");
         try (Connection conn = DatabaseManager.getInstance().getConnection()) {
             conn.setAutoCommit(false);
-            Logger logger = Logger.getInstance();
-            int totalRows = userModel.getRowCount();
-            System.out.println("[LOG] Обработка " + totalRows + " записей");
+            boolean hasErrors = false;
 
-            for (int i = 0; i < totalRows; i++) {
+            for (int i = 0; i < userModel.getRowCount(); i++) {
                 Object[] row = userModel.getRow(i);
                 UserData data = new UserData(row);
-                System.out.println("[LOG] Обработка пользователя: " + data.login);
 
                 if (!validateUserData(data, i)) {
-                    System.out.println("[WARN] Валидация не пройдена для строки " + (i+1));
-                    return;
+                    hasErrors = true;
+                    continue;
                 }
 
-                if (data.isNewUser()) {
-                    System.out.println("[LOG] Создание нового пользователя: " + data.login);
-                    createUser(conn, data, logger);
-                } else {
-                    System.out.println("[LOG] Обновление пользователя ID: " + data.id);
-                    updateUser(conn, data, logger);
+                try {
+                    if (data.isNewUser()) {
+                        createUser(conn, data);
+                    } else {
+                        updateUser(conn, data);
+                    }
+                } catch (SQLException e) {
+                    hasErrors = true;
+                    showError("Ошибка сохранения строки " + (i+1) + ": " + e.getMessage());
                 }
             }
-            conn.commit();
-            logger.log("Успешное сохранение данных пользователей");
-            System.out.println("[LOG] Все изменения успешно сохранены");
-            showInfo("Данные сохранены успешно!");
+
+            if (hasErrors) {
+                conn.rollback();
+                showError("Сохранение отменено из-за ошибок");
+            } else {
+                conn.commit();
+                loadUsers(); // Перезагружаем данные после сохранения
+                showInfo("Данные успешно сохранены!");
+            }
         } catch (SQLException ex) {
-            System.out.println("[ERROR] Ошибка сохранения: " + ex.getMessage());
-            Logger.getInstance().logError("Ошибка сохранения: " + ex.getMessage());
-            showError("Ошибка сохранения: " + ex.getMessage());
+            showError("Ошибка подключения к базе: " + ex.getMessage());
         }
     }
 
@@ -352,10 +459,17 @@ public class Setting extends JPanel{
             showError("Введите пароль для нового пользователя в строке " + (row+1));
             return false;
         }
+        try {
+            UserRole.valueOf(data.role);
+        } catch (IllegalArgumentException e) {
+            showError("Некорректная роль пользователя в строке " + (row+1));
+            return false;
+        }
+
         return true;
     }
 
-    private void createUser(Connection conn, UserData data, Logger logger) throws SQLException {
+    private void createUser(Connection conn, UserData data) throws SQLException {
         System.out.println("[LOG] Проверка существования логина: " + data.login);
         if (isLoginExists(conn, data.login)) {
             System.out.println("[ERROR] Логин уже существует: " + data.login);
@@ -377,11 +491,17 @@ public class Setting extends JPanel{
         System.out.println("[LOG] Пользователь создан: " + data.login);
     }
 
-    private void updateUser(Connection conn, UserData data, Logger logger) throws SQLException {
+    private void updateUser(Connection conn, UserData data) throws SQLException {
         String updateQuery = "UPDATE Пользователи SET Фио=?, Роль=?, Логин=?, Доступ=?";
         boolean passwordChanged = !data.password.equals("********");
         System.out.println("[LOG] Обновление пользователя. Смена пароля: " + passwordChanged);
-
+        // Проверяем, изменился ли логин
+        if (isLoginChanged(conn, data)) {
+            if (isLoginExists(conn, data.login)) {
+                showError("Логин уже существует: " + data.login);
+                throw new SQLException("Duplicate login");
+            }
+        }
         if (passwordChanged) {
             updateQuery += ", Пароль=?";
             String hashedPass = BCrypt.hashpw(data.password, BCrypt.gensalt());
@@ -409,6 +529,15 @@ public class Setting extends JPanel{
         }
         logger.log("Обновлен пользователь ID: " + data.id);
         System.out.println("[LOG] Пользователь ID " + data.id + " обновлен");
+    }
+
+    private boolean isLoginChanged(Connection conn, UserData data) throws SQLException {
+        try (PreparedStatement pstmt = conn.prepareStatement(
+                "SELECT Логин FROM Пользователи WHERE id=?")) {
+            pstmt.setInt(1, data.id);
+            ResultSet rs = pstmt.executeQuery();
+            return rs.next() && !rs.getString("Логин").equals(data.login);
+        }
     }
 
 
@@ -452,25 +581,29 @@ public class Setting extends JPanel{
             return id == null;
         }
     }
-
+    private void updatePortStatus(boolean isOpen) {
+        ButtonOpenPort.setEnabled(!isOpen);
+        ButtonClosePort.setEnabled(isOpen);
+        comboBoxSerialPort.setEnabled(!isOpen);
+        textFieldIPAdress.setEnabled(!isOpen);
+        textFieldPrinterPort.setEnabled(!isOpen);
+    }
     private void handleOpenPort(ActionEvent e) {
         try {
             if (COMPortCheckBox.isSelected()) {
                 String portName = (String) comboBoxSerialPort.getSelectedItem();
-                if (portName == null) throw new Exception("Выберите COM-порт!");
-                PrinterManager.openPort(portName, null, 0);
+                PrinterManager.openCOMPort(portName);
             } else if (ethernetCheckBox.isSelected()) {
                 String ip = textFieldIPAdress.getText().trim();
-                String portText = textFieldPrinterPort.getText().trim();
-                if (ip.isEmpty() || portText.isEmpty()) throw new Exception("Заполните IP и порт!");
-                int port = Integer.parseInt(portText);
-                PrinterManager.openPort(null, ip, port);
+                int port = Integer.parseInt(textFieldPrinterPort.getText().trim());
+                PrinterManager.openEthernetPort(ip, port);
             }
-            JOptionPane.showMessageDialog(this, "Порт открыт!");
+            updatePortStatus(true);
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Ошибка: " + ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+            showError("Ошибка открытия порта: " + ex.getMessage());
         }
     }
+
     private void handleClosePort(ActionEvent e) {
         try {
             PrinterManager.closePort();

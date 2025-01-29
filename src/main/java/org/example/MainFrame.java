@@ -97,7 +97,7 @@ public class MainFrame extends JFrame {
 
     public void showGeneral() {
         ((CardLayout) mainPanel.getLayout()).show(mainPanel, "General");
-//        generalPanel.loadPrintersToComboBox(); // Обновляем список при открытии
+        generalPanel.loadPrintersToComboBox(); // Обновляем список при открытии
 
     }
 
