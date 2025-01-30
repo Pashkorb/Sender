@@ -157,6 +157,14 @@ public class General extends JPanel implements PrinterDataListener {
                 return;
             }
 
+            // Получаем ID выбранного принтера
+            int printId = getSelectedPrinterId();
+            if (printId == -1) {
+                JOptionPane.showMessageDialog(null, "Принтер не выбран!",
+                        "Ошибка", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             // Получаем количество копий
             if (CheckBox_CountPrint.isSelected()) {
                 try {
@@ -188,7 +196,8 @@ public class General extends JPanel implements PrinterDataListener {
             // Отправка данных
             try {
                 Coder coder = new Coder();
-                PrinterCommand command = coder.preparePrintCommand(printTasks, "02");
+
+                PrinterCommand command = coder.preparePrintCommand(printTasks, "02",printId);
                 String preparedCommand = coder.prepareCommandForSending(command);
 
                 // Логирование
@@ -248,15 +257,25 @@ public class General extends JPanel implements PrinterDataListener {
             e.printStackTrace();
         }
     }
+    private Map<String, Integer> printerMap = new HashMap<>(); // Хранит название принтера и его ID
 
     void loadPrintersToComboBox() {
+        printerMap.clear(); // Очищаем предыдущие данные
+        comboBox_Printers.removeAllItems(); // Очищаем список
+
         try (Connection conn = DatabaseManager.getInstance().getConnection();
              Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT Наименование FROM Принтеры")) {
+             ResultSet rs = stmt.executeQuery("SELECT id, Наименование FROM Принтеры")) {
 
-            comboBox_Printers.removeAllItems(); // Очищаем список
             while (rs.next()) {
-                comboBox_Printers.addItem(rs.getString("Наименование"));
+                int printerId = rs.getInt("id");
+                String printerName = rs.getString("Наименование");
+
+                // Добавляем в Map
+                printerMap.put(printerName, printerId);
+
+                // Добавляем в JComboBox
+                comboBox_Printers.addItem(printerName);
             }
 
             System.out.println("[DEBUG] Загружено принтеров: " + comboBox_Printers.getItemCount());
@@ -269,6 +288,13 @@ public class General extends JPanel implements PrinterDataListener {
         }
     }
 
+    private int getSelectedPrinterId() {
+        String selectedPrinterName = (String) comboBox_Printers.getSelectedItem();
+        if (selectedPrinterName != null && printerMap.containsKey(selectedPrinterName)) {
+            return printerMap.get(selectedPrinterName);
+        }
+        return -1; // Если принтер не выбран или не найден
+    }
 
     private void setFontForAllComponents(Container container, Font font) {
         for (Component component : container.getComponents()) {

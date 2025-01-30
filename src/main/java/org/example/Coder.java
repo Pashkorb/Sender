@@ -1,12 +1,17 @@
 package org.example;
 
+import org.example.Service.CurrentUser;
+import org.example.Service.PrintTaskManager;
+import org.example.Service.PrinterManager;
+
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Coder {
 
     // Подготовка команды для печати
-    public PrinterCommand preparePrintCommand(List<String> printTasks, String commandCode) throws Exception {
+    public PrinterCommand preparePrintCommand(List<String> printTasks, String commandCode,int printId) throws Exception {
         if (printTasks == null || printTasks.isEmpty()) {
             throw new Exception("No data to print");
         }
@@ -14,12 +19,15 @@ public class Coder {
         List<String> dataList = new java.util.ArrayList<>();
 
         // Collect data in reverse order
+        String text = null;
         for (int index = printTasks.size() - 1; index >= 0; index--) {
-            String text = printTasks.get(index);
+            text = printTasks.get(index);
             if (!text.isEmpty() || !dataList.isEmpty()) {
                 dataList.add(0, text); // Insert at the beginning to reverse
             }
         }
+        String sText=dataList.stream().collect(Collectors.joining(", ")).toString();
+        PrintTaskManager.logPrintTask(CurrentUser.getId(), printId, sText);
 
         if (dataList.isEmpty()) {
             throw new Exception("No data to print");

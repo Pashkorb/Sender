@@ -105,7 +105,7 @@
             </constraints>
             <properties>
               <font size="24"/>
-              <text value="Label"/>
+              <text value=""/>
             </properties>
           </component>
           <component id="40f93" class="javax.swing.JButton" binding="buttonLogOut">

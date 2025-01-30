@@ -8,10 +8,7 @@ import org.example.Service.LicenseManager;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.time.LocalDate;
 
 public class Hello extends JFrame{
@@ -36,7 +33,9 @@ public class Hello extends JFrame{
         // Развернуть окно на весь экран
         setExtendedState(JFrame.MAXIMIZED_BOTH);
 
+        setSize(1920, 1080);
         mainPanel.setPreferredSize(new Dimension(1920, 1080));
+        setResizable(false);
 
 
         supportPanel=new Support(this);

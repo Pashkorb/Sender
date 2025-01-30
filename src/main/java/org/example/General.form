@@ -327,7 +327,7 @@
                   </grid>
                 </constraints>
                 <properties/>
-                <border type="none"/>
+                <border type="line"/>
                 <children>
                   <component id="c4f44" class="javax.swing.JTable" binding="table1" default-binding="true">
                     <constraints/>
