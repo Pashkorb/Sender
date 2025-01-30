@@ -1,5 +1,6 @@
 package org.example;
 
+import org.example.Service.CurrentUser;
 import org.example.Service.EmailSender;
 
 import javax.swing.*;
@@ -37,6 +38,7 @@ public class Support extends JPanel{
         this.parent = parent;
         add(mainPanel); // Добавляем панель из дизайнера
         mainPanel.setPreferredSize(new Dimension(1920, 1080));
+        LableName.setText(CurrentUser.getName());
 
         buttonHome.addActionListener(e -> parent.showHome());
         buttonSetting.addActionListener(e -> parent.showSettings());

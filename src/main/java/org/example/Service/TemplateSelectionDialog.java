@@ -12,9 +12,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class TemplateSelectionDialog extends JDialog {
-    private JComboBox<String> comboBoxTemplates;
-    private JButton buttonSelect;
-    private General parentFrame;
+    private final JComboBox<String> comboBoxTemplates;
+    private final JButton buttonSelect;
+    private final General parentFrame;
 
     public TemplateSelectionDialog(MainFrame parent) {
         super(parent, "Выбор шаблона", true);

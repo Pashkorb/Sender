@@ -14,7 +14,7 @@ public class Home extends JPanel{
     private JLabel LableName;
     private JButton buttonLogOut;
     private JPanel mainframe;
-    private MainFrame parent;
+    private final MainFrame parent;
 
     public Home(MainFrame parent) {
         this.parent=parent;

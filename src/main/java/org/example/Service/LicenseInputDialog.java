@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class LicenseInputDialog extends JDialog {
-    private JTextField licenseField;
+    private final JTextField licenseField;
     private boolean licenseValid = false;
 
     public LicenseInputDialog(Frame owner) {

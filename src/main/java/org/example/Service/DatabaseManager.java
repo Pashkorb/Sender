@@ -72,7 +72,7 @@ public class DatabaseManager {
         }
         // Добавляем параметр busy_timeout
         return DriverManager.getConnection(
-                "jdbc:sqlite:file:" + dbFilePath.toString() + "?busy_timeout=1000"
+                "jdbc:sqlite:file:" + dbFilePath + "?busy_timeout=1000"
         );
     }
     private void initializeDatabase() {
@@ -101,6 +101,15 @@ public class DatabaseManager {
                     "FOREIGN KEY (Пользователь_id) REFERENCES Пользователи(id))");
             log("Таблица 'ЖурналАвторизаций' создана или уже существует.");
 
+            statement.execute("CREATE TABLE IF NOT EXISTS ЗаданияПечати (" +
+                    "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "Пользователь_id INTEGER NOT NULL, " +
+                    "Принтер_id INTEGER NOT NULL, " +
+                    "ДатаВремяПечати TEXT NOT NULL, " +
+                    "Сообщение TEXT, " +
+                    "FOREIGN KEY (Пользователь_id) REFERENCES Пользователи(id)," +
+                    "FOREIGN KEY (Принтер_id) REFERENCES Принтеры(id))");
+            log("Таблица 'ЗаданияПечати' создана или уже существует.");
 
             // Создаём таблицу Принтеры
             statement.execute("CREATE TABLE IF NOT EXISTS Принтеры (" +
@@ -206,8 +215,21 @@ public class DatabaseManager {
         return fields;
     }
 
+    public void savePrintTask(int userId, int printerId, String message) {
+        String sql = "INSERT INTO ЗаданияПечати (Пользователь_id, Принтер_id, ДатаВремяПечати, Сообщение) " +
+                "VALUES (?, ?, datetime('now', 'localtime'), ?)";
 
-
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, userId);
+            pstmt.setInt(2, printerId);
+            pstmt.setString(3, message);
+            pstmt.executeUpdate();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            Logger.getInstance().logError("Ошибка сохранения задания печати: " + ex.getMessage());
+        }
+    }
 
 
 }

@@ -5,8 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PrintReportMessagTableModel extends AbstractTableModel { // Добавляем наследование
-    private final String[] columnNames = {"Принтер", "Серийный номер", "Дата печати","Сообщение"};
+    private final String[] columnNames = {"Сотрудник", "Принтер", "Серийный номер", "Дата печати", "Сообщение"};
     private final List<Object[]> data = new ArrayList<>();
+    private final List<Boolean> modified = new ArrayList<>();
 
     @Override
     public int getRowCount() {
@@ -30,18 +31,31 @@ public class PrintReportMessagTableModel extends AbstractTableModel { // Доб�
 
     @Override
     public Object getValueAt(int row, int col) {
-        Object[] printer = data.get(row);
+        Object[] record = data.get(row);
         return switch (col) {
-            case 0 -> printer[0] + " (" + printer[1] + ")";
-            case 1 -> printer[2] + " ч.";
-            case 2 -> "0 ч.";
+            case 0 -> record[0]; // Сотрудник
+            case 1 -> record[1]; // Принтер
+            case 2 -> record[2]; // Серийный номер
+            case 3 -> record[3]; // Дата печати
+            case 4 -> record[4]; // Сообщение
             default -> null;
         };
     }
 
-    public void addRow(String name, String serial, int hours) {
-        data.add(new Object[]{name, serial, hours});
-        fireTableRowsInserted(data.size()-1, data.size()-1); // Теперь метод доступен
+    public void addRow(String user, String printer, String serial, String date, String message) {
+        data.add(new Object[]{user, printer, serial, date, message});
+        fireTableRowsInserted(data.size()-1, data.size()-1);
+        modified.add(false);
     }
 
+    public void setRowCount(int rowCount) {
+        if (rowCount == 0) {
+            int oldSize = data.size();
+            if (oldSize > 0) { // Добавляем проверку на положительный размер
+                data.clear();
+                modified.clear();
+                fireTableRowsDeleted(0, oldSize - 1);
+            }
+        }
+    }
 }

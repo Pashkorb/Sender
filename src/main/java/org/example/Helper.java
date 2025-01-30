@@ -95,8 +95,7 @@ public class Helper extends JPanel{
     private void setFontForAllComponents(Container container, Font font) {
         for (Component component : container.getComponents()) {
             // Обрабатываем кнопки отдельно с принудительным обновлением
-            if (component instanceof JButton) {
-                JButton button = (JButton) component;
+            if (component instanceof JButton button) {
                 Font currentFont = button.getFont();
                 button.setFont(new Font(
                         currentFont.getName(),
@@ -117,12 +116,10 @@ public class Helper extends JPanel{
             }
 
             // Рекурсивный обход контейнеров
-            if (component instanceof Container) {
-                Container childContainer = (Container) component;
+            if (component instanceof Container childContainer) {
 
                 // Особые случаи контейнеров
-                if (childContainer instanceof JScrollPane) {
-                    JScrollPane scrollPane = (JScrollPane) childContainer;
+                if (childContainer instanceof JScrollPane scrollPane) {
                     setFontForAllComponents(scrollPane.getViewport(), font);
                 }
                 else if (childContainer instanceof JViewport) {

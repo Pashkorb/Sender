@@ -18,16 +18,16 @@ public class MainFrame extends JFrame {
     private final Logger logger = Logger.getInstance(); // Добавляем логгер
 
     private JPanel mainPanel;
-    private General generalPanel;
-    private Setting settingPanel;
+    private final General generalPanel;
+    private final Setting settingPanel;
     private  Report reportPanel;
 
-    private Support supportPanel;
-    private Admin adminPanel;
+    private final Support supportPanel;
+    private final Admin adminPanel;
 
-    private Home homePanel;
+    private final Home homePanel;
 
-    private LocalDate date;
+    private final LocalDate date;
 
     public MainFrame(LocalDate dated) {
 
@@ -49,7 +49,7 @@ public class MainFrame extends JFrame {
         generalPanel = new General(this,date);
         settingPanel = new Setting(this,date);
         adminPanel=new Admin(this,date);
-//        reportPanel=new Report(this);
+        reportPanel=new Report(this);
 
         // Настройка CardLayout
         mainPanel = new JPanel(new CardLayout());
@@ -57,7 +57,7 @@ public class MainFrame extends JFrame {
         mainPanel.add(supportPanel, "Support");
         mainPanel.add(generalPanel, "General");
         mainPanel.add(settingPanel, "Settings");
-//        mainPanel.add(reportPanel, "Report");
+        mainPanel.add(reportPanel, "Report");
         mainPanel.add(adminPanel,"Admin");
 
 
@@ -89,7 +89,7 @@ public class MainFrame extends JFrame {
         try (Connection conn = DatabaseManager.getInstance().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(
                      "INSERT INTO ЖурналАвторизаций (Пользователь_id, ТипСобытия, ДатаВремя) " +
-                             "VALUES (?, 'Выход', datetime('now'))")) {
+                             "VALUES (?, 'Выход', datetime('now', 'localtime'))")) {
             pstmt.setInt(1, CurrentUser.getId());
             pstmt.executeUpdate();
         } catch (Exception e) {

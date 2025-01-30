@@ -10,6 +10,7 @@ public class LoginReportTableModel extends AbstractTableModel {
     private final String[] columnNames = {"ФИО сотрудника", "Дата входа", "Дата выхода"};
     private final List<Object[]> data = new ArrayList<>();
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+    private final List<Boolean> modified = new ArrayList<>();
 
     @Override
     public int getRowCount() {
@@ -46,6 +47,9 @@ public class LoginReportTableModel extends AbstractTableModel {
         if (isoDateTime == null || isoDateTime.trim().isEmpty()) {
             return "Не зарегистрирован";
         }
+        if (isoDateTime.equals("Не завершено")) {
+            return isoDateTime; // Возвращаем как есть
+        }
         try {
             DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             LocalDateTime dateTime = LocalDateTime.parse(isoDateTime, inputFormatter);
@@ -57,7 +61,19 @@ public class LoginReportTableModel extends AbstractTableModel {
     }
 
     public void addRow(String fio, String loginTime, String logoutTime) {
+        modified.add(false);
         data.add(new Object[]{fio, loginTime, logoutTime});
         fireTableRowsInserted(data.size() - 1, data.size() - 1);
+    }
+
+    public void setRowCount(int rowCount) {
+        if (rowCount == 0) {
+            int oldSize = data.size();
+            if (oldSize > 0) { // Добавляем проверку на положительный размер
+                data.clear();
+                modified.clear();
+                fireTableRowsDeleted(0, oldSize - 1);
+            }
+        }
     }
 }

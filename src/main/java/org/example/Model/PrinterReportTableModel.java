@@ -7,6 +7,8 @@ import java.util.List;
 public class PrinterReportTableModel extends AbstractTableModel { // Добавляем наследование
     private final String[] columnNames = {"Принтер", "Отработано", "Осталось до ТО"};
     private final List<Object[]> data = new ArrayList<>();
+    private final List<Boolean> modified = new ArrayList<>();
+
 
     @Override
     public int getRowCount() {
@@ -34,13 +36,25 @@ public class PrinterReportTableModel extends AbstractTableModel { // Добав�
         return switch (col) {
             case 0 -> printer[0] + " (" + printer[1] + ")";
             case 1 -> printer[2] + " ч.";
-            case 2 -> "0 ч.";
+            case 2 -> (1000 - (Integer)printer[2]) + " ч."; // Предполагаем ТО каждые 1000 часов
             default -> null;
         };
     }
 
     public void addRow(String name, String serial, int hours) {
         data.add(new Object[]{name, serial, hours});
+        modified.add(false);
         fireTableRowsInserted(data.size()-1, data.size()-1); // Теперь метод доступен
+    }
+
+    public void setRowCount(int rowCount) {
+        if (rowCount == 0) {
+            int oldSize = data.size();
+            if (oldSize > 0) { // Добавляем проверку на положительный размер
+                data.clear();
+                modified.clear();
+                fireTableRowsDeleted(0, oldSize - 1);
+            }
+        }
     }
 }

@@ -18,11 +18,11 @@ public class Hello extends JFrame{
     private JLabel FastMarking;
     private JLabel F1;
     private JLabel F2;
-    private Support supportPanel;
+    private final Support supportPanel;
     private JButton buttonEnter;
     private JButton buttonHelper;
     private JPanel mainPanel;
-    private HelloPanel helloPanel;
+    private final HelloPanel helloPanel;
 
     public Hello (){
         System.out.println("[MAIN FRAME] Создание главного окна");

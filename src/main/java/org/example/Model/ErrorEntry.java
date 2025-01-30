@@ -6,8 +6,8 @@ import java.time.LocalDateTime;
 
 public class ErrorEntry {
     private int id;
-    private String errorText;
-    private LocalDateTime timestamp;
+    private final String errorText;
+    private final LocalDateTime timestamp;
 
     public ErrorEntry(String errorText, LocalDateTime timestamp) {
         this.id = id;

@@ -2,8 +2,8 @@ package org.example;
 
 public class PrinterCommand {
 
-    private String functionCode;
-    private String data;
+    private final String functionCode;
+    private final String data;
 
     public PrinterCommand(String functionCode, String data) {
         this.functionCode = functionCode;

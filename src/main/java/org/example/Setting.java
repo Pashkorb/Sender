@@ -5,10 +5,7 @@ import org.example.Model.PrinterTableModel;
 import org.example.Model.TemplateField;
 import org.example.Model.TemplateTableModel;
 import org.example.Model.UserTableModel;
-import org.example.Service.DatabaseManager;
-import org.example.Service.Logger;
-import org.example.Service.PrinterManager;
-import org.example.Service.UserRole;
+import org.example.Service.*;
 import org.mindrot.jbcrypt.BCrypt;
 
 import javax.swing.*;
@@ -22,7 +19,7 @@ import java.time.format.DateTimeFormatter;
 
 
 public class Setting extends JPanel{
-    private TemplateTableModel templateModel;
+    private final TemplateTableModel templateModel;
     private UserTableModel userModel;
     private JTextField textFielLicense;
     private JComboBox comboBoxSerialPort;
@@ -51,7 +48,7 @@ public class Setting extends JPanel{
     private JButton buttonGeneral;
     private JButton buttonHelper;
 
-    private PrinterTableModel printerModel;
+    private final PrinterTableModel printerModel;
 
     private JButton buttonSave;
 
@@ -63,10 +60,11 @@ public class Setting extends JPanel{
     private JTable table2;
 
     private JButton buttonsavePrinters;
-    private MainFrame parent;
+    private final MainFrame parent;
     public Setting(MainFrame parent,LocalDate date) {
         this.parent = parent;
         add(mainPanel);
+        LableName.setText(CurrentUser.getName());
 
 
         buttonHome.addActionListener(e -> parent.showHome());

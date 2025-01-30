@@ -23,7 +23,7 @@ public class Enter extends JDialog { // Используем JDialog вмест�
     private JTextField textFieldLogin;//логин
     private JTextField textFieldPassword;//пароль
 
-    private LocalDate date;
+    private final LocalDate date;
     public Enter(LocalDate expirationDate) {
         super((JFrame) null, "Вход в систему", true); // Модальное окно
         System.out.println("[ENTER] Инициализация формы входа");
@@ -129,7 +129,8 @@ public class Enter extends JDialog { // Используем JDialog вмест�
         });
     }
     private void logLogin(int userId, Connection conn) throws SQLException {
-        String sql = "INSERT INTO ЖурналАвторизаций (Пользователь_id, ТипСобытия, ДатаВремя) VALUES (?, 'Вход', datetime('now'))";
+        String sql = "INSERT INTO ЖурналАвторизаций (Пользователь_id, ТипСобытия, ДатаВремя) " +
+                "VALUES (?, 'Вход', datetime('now', 'localtime'))";
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, userId);
             pstmt.executeUpdate();

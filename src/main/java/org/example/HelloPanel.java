@@ -12,7 +12,7 @@ public class HelloPanel extends JPanel{
     private JButton buttonEnter;
     private JButton buttonHelper;
     private JLabel FastMarking;
-    private Hello parent;
+    private final Hello parent;
 
     public HelloPanel(Hello parent) {
         this.parent = parent;

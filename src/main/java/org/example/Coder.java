@@ -58,7 +58,7 @@ public class Coder {
         // Checksum
         int checksum = 0;
         for (char c : result.toString().toCharArray()) {
-            checksum += (int) c;
+            checksum += c;
         }
         checksum = checksum - (checksum / 65536) * 65536;
         checksum = (~checksum) + 1; // Two's complement
@@ -88,7 +88,7 @@ public class Coder {
             result.append(ByteToHex(b));
         }
 
-        System.out.println("[INFO] Преобразование строки в HEX завершено: " + result.toString());
+        System.out.println("[INFO] Преобразование строки в HEX завершено: " + result);
         return result.toString();
     }
 
@@ -102,6 +102,6 @@ public class Coder {
         String hexString = "0123456789ABCDEF";
         int high = (value >> 4) & 0xF;
         int low = value & 0xF;
-        return String.valueOf(hexString.charAt(high)) + String.valueOf(hexString.charAt(low));
+        return String.valueOf(hexString.charAt(high)) + hexString.charAt(low);
     }
 }

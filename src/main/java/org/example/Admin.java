@@ -35,9 +35,9 @@ public class Admin extends JPanel {
     private JTable tableUser;
     private JTable tableErrors;
     private JButton buttonSaveUsers;
-    private MainFrame parent;
-    private LocalDate date;
-    private UserTableModel userModel;
+    private final MainFrame parent;
+    private final LocalDate date;
+    private final UserTableModel userModel;
 
     public Admin(MainFrame parent, LocalDate date) {
         this.parent = parent;

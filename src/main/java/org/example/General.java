@@ -42,7 +42,7 @@ public class General extends JPanel implements PrinterDataListener {
     private JTextField textFieldNameFieldX2;
     private JTextField textFieldNameFieldX3;
 
-    private int visibleFieldsCount = 3; // Начальное количество видимых полей
+    private final int visibleFieldsCount = 3; // Начальное количество видимых полей
 
 
     private int remainingCopies;
@@ -69,7 +69,7 @@ public class General extends JPanel implements PrinterDataListener {
     private JTextField textFieldX5;
     private JLabel LabelX5;
     private JTextField textFieldTextX4;
-    private TemplateTableModel tableModel;
+    private final TemplateTableModel tableModel;
     private JTextField textFieldX4;
 
     private JLabel LabelX4;
@@ -79,9 +79,9 @@ public class General extends JPanel implements PrinterDataListener {
     private JPanel JPanelX3;
     private JPanel JPanelX4;
     private JPanel JPanelX5;
-    private MainFrame parent;
+    private final MainFrame parent;
 
-    private LocalDate date;
+    private final LocalDate date;
 
     public General(MainFrame parent, LocalDate date) {
         this.parent = parent;
@@ -216,11 +216,12 @@ public class General extends JPanel implements PrinterDataListener {
                     JOptionPane.ERROR_MESSAGE);
         }
     }
+
+
     private void setFontForAllComponents(Container container, Font font) {
         for (Component component : container.getComponents()) {
             // Обрабатываем кнопки отдельно с принудительным обновлением
-            if (component instanceof JButton) {
-                JButton button = (JButton) component;
+            if (component instanceof JButton button) {
                 Font currentFont = button.getFont();
                 button.setFont(new Font(
                         currentFont.getName(),
@@ -241,12 +242,10 @@ public class General extends JPanel implements PrinterDataListener {
             }
 
             // Рекурсивный обход контейнеров
-            if (component instanceof Container) {
-                Container childContainer = (Container) component;
+            if (component instanceof Container childContainer) {
 
                 // Особые случаи контейнеров
-                if (childContainer instanceof JScrollPane) {
-                    JScrollPane scrollPane = (JScrollPane) childContainer;
+                if (childContainer instanceof JScrollPane scrollPane) {
                     setFontForAllComponents(scrollPane.getViewport(), font);
                 }
                 else if (childContainer instanceof JViewport) {
