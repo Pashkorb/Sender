@@ -3,6 +3,7 @@ package org.example;
 import org.example.Service.EmailSender;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 
 public class Support extends JPanel{
@@ -35,6 +36,7 @@ public class Support extends JPanel{
 
         this.parent = parent;
         add(mainPanel); // Добавляем панель из дизайнера
+        mainPanel.setPreferredSize(new Dimension(1920, 1080));
 
         buttonHome.addActionListener(e -> parent.showHome());
         buttonSetting.addActionListener(e -> parent.showSettings());

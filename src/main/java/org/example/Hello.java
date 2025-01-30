@@ -35,7 +35,9 @@ public class Hello extends JFrame{
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         // Развернуть окно на весь экран
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setSize(1920, 1080);
+
+        mainPanel.setPreferredSize(new Dimension(1920, 1080));
+
 
         supportPanel=new Support(this);
         helloPanel=new HelloPanel(this);

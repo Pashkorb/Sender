@@ -44,6 +44,7 @@ public class Admin extends JPanel {
         this.date = date;
         add(mainPanel); // Добавляем панель из дизайнера
         LableName.setText(CurrentUser.getName());
+        mainPanel.setPreferredSize(new Dimension(1920, 1080));
 
         buttonHome.addActionListener(e -> parent.showHome());
         buttonSetting.addActionListener(e -> parent.showSettings());

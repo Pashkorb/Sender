@@ -38,6 +38,7 @@ public class Report extends JPanel {
         button3.setFocusPainted(false);
         button3.setText("");
 
+        mainPanel.setPreferredSize(new Dimension(1920, 1080));
 
         button1.addActionListener(e -> parent.showSettings());
         button2.addActionListener(e -> parent.showGeneral());

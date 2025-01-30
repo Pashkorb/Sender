@@ -89,6 +89,7 @@ public class Setting extends JPanel{
 
 
 
+        mainPanel.setPreferredSize(new Dimension(1920, 1080));
 
 
         // Инициализация таблицы принтеров
