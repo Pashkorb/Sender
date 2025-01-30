@@ -1,6 +1,9 @@
 package org.example;
 
+import org.example.Service.EmailSender;
+
 import javax.swing.*;
+import java.awt.event.ActionEvent;
 
 public class Support extends JPanel{
     private JLabel LableName;
@@ -24,7 +27,7 @@ public class Support extends JPanel{
     public Support(Hello parent){
         this.parentH = parent;
         add(mainPanel); // Добавляем панель из дизайнера
-
+        initComponents();
 
     }
 
@@ -40,6 +43,37 @@ public class Support extends JPanel{
         buttonSupport.addActionListener(e -> parent.showSupport());
         buttonReport.addActionListener(e -> parent.showReport());
         buttonLogOut.addActionListener(e -> parent.logLogout());
+        initComponents();
+    }
 
+    private void initComponents() {
+        // Настройка шрифтов
+
+        // Заполнение комбобокса
+        comboBox1.setModel(new DefaultComboBoxModel<>(new String[]{
+                "Айти поддержка",
+                "Техническая поддержка"
+        }));
+
+        // Обработчик отправки
+        отправитьButton.addActionListener(this::sendEmail);
+    }
+
+    private void sendEmail(ActionEvent e) {
+        String subject = textField1.getText();
+        String supportType = (String) comboBox1.getSelectedItem();
+        String body = textArea1.getText();
+
+        String fullBody = "Тип поддержки: " + supportType + "\n\n" + body;
+        String to = supportType.equals("Айти поддержка")
+                ? "support@mirmarking.ru"
+                : "service@mirmarking.ru";
+
+        try {
+            EmailSender.sendEmail(to, subject, fullBody);
+            JOptionPane.showMessageDialog(this, "Письмо отправлено!", "Успех", JOptionPane.INFORMATION_MESSAGE);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Ошибка: " + ex.getMessage(), "Ошибка", JOptionPane.ERROR_MESSAGE);
+        }
     }
 }

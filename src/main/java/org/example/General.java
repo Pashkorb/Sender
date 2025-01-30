@@ -103,6 +103,7 @@ public class General extends JPanel implements PrinterDataListener {
         ButtonAddField.addActionListener(e -> addNewField());
         ButtonRemoveField.addActionListener(e -> removeSelectedField());
         ButtonSelectSample.addActionListener(e -> selectTemplate());
+        mainPanel.setPreferredSize(new Dimension(1920, 1080));
 
 
         // Добавляем обработчик для кнопки отправки данных

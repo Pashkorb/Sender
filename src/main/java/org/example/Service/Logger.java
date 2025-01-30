@@ -4,6 +4,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -58,6 +60,36 @@ public class Logger {
     }
 
     public void logError(String error) {
-        log("ОШИБКА: " + error);
+        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        String logMessage = "[" + timestamp + "] ОШИБКА: " + error;
+
+        // Запись в файл
+        logToFile(logMessage);
+
+        // Запись в БД
+        logToDatabase(error, timestamp);
     }
+    private void logToFile(String message) {
+        try {
+            Files.write(logFilePath, (message + "\n").getBytes(), StandardOpenOption.APPEND);
+        } catch (Exception e) {
+            System.err.println("Ошибка записи в лог: " + e.getMessage());
+        }
+    }
+
+    private void logToDatabase(String errorText, String timestamp) {
+        String sql = "INSERT INTO Ошибки (Текст, ДатаВремя) VALUES (?, ?)";
+
+        try (Connection conn = DatabaseManager.getInstance().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, errorText);
+            pstmt.setString(2, timestamp);
+            pstmt.executeUpdate();
+
+        } catch (Exception e) {
+            System.err.println("Ошибка записи в базу данных: " + e.getMessage());
+        }
+    }
+
 }

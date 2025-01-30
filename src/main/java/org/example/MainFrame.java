@@ -54,7 +54,7 @@ public class MainFrame extends JFrame {
         // Настройка CardLayout
         mainPanel = new JPanel(new CardLayout());
         mainPanel.add(homePanel,"Home");
-        mainPanel.add(generalPanel, "Support");
+        mainPanel.add(supportPanel, "Support");
         mainPanel.add(generalPanel, "General");
         mainPanel.add(settingPanel, "Settings");
 //        mainPanel.add(reportPanel, "Report");

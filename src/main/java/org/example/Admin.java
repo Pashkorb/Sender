@@ -1,5 +1,7 @@
 package org.example;
 
+import org.example.Model.ErrorEntry;
+import org.example.Model.ErrorTableModel;
 import org.example.Model.UserTableModel;
 import org.example.Service.*;
 import org.mindrot.jbcrypt.BCrypt;
@@ -9,6 +11,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.sql.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Admin extends JPanel {
     private JPanel mainPanel;
@@ -20,12 +24,14 @@ public class Admin extends JPanel {
     private JButton buttonReport;
     private JLabel LableName;
     private JButton buttonLogOut;
-    private JTextField textFieldLicence;
+    private JTextField textFieldLicence;    private Timer refreshTimer;
+
     private final Logger logger = Logger.getInstance(); // Добавляем логгер
 
     private JTextField textFieldNextLicence;
     private JButton ButtonActiveLicence;
-    private JButton ButtonAddUser;
+    private JButton ButtonAddUser;    private ErrorTableModel errorModel;
+
     private JTable tableUser;
     private JTable tableErrors;
     private JButton buttonSaveUsers;
@@ -62,7 +68,45 @@ public class Admin extends JPanel {
         buttonSaveUsers.addActionListener(e -> saveUsers());
 
         textFieldLicence.setText("Лицензия активирована, дата окончания - " + date);
+        initErrorTable();
+        loadErrors();
+    }
 
+    private void initErrorTable() {
+        errorModel = new ErrorTableModel();
+        tableErrors.setModel(errorModel);
+
+        // Настройка колонок
+        tableErrors.getColumnModel().getColumn(0).setPreferredWidth(150);
+        tableErrors.getColumnModel().getColumn(1).setPreferredWidth(200);
+
+    }
+    private void initAutoRefresh() {
+        refreshTimer = new Timer(50000, e -> refreshErrors());
+        refreshTimer.start();
+    }
+
+    private void refreshErrors() {
+        errorModel.loadErrors();
+    }
+    private void loadErrors() {
+        String sql = "SELECT Текст, ДатаВремя FROM Ошибки ORDER BY id DESC";
+
+        try (Connection conn = DatabaseManager.getInstance().getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            while (rs.next()) {
+                ErrorEntry error = new ErrorEntry(
+                        rs.getString("Текст"),
+                        LocalDateTime.parse(rs.getString("ДатаВремя"),
+                                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                );
+                errorModel.addError(error);
+            }
+        } catch (Exception e) {
+            logger.logError("Ошибка загрузки ошибок: " + e.getMessage());
+        }
     }
     private void activateLicense() {
         String newLicense = textFieldNextLicence.getText().trim();
