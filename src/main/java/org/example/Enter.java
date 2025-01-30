@@ -8,6 +8,8 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -24,8 +26,11 @@ public class Enter extends JDialog { // Используем JDialog вмест�
     private JTextField textFieldPassword;//пароль
 
     private final LocalDate date;
-    public Enter(LocalDate expirationDate) {
-        super((JFrame) null, "Вход в систему", true); // Модальное окно
+    private Hello parent;
+    public Enter(LocalDate expirationDate, Hello parent) {
+        this.parent=parent;
+
+//        super((JFrame) null, "Вход в систему", true); // Модальное окно
         System.out.println("[ENTER] Инициализация формы входа");
         date=expirationDate;
 
@@ -42,18 +47,29 @@ public class Enter extends JDialog { // Используем JDialog вмест�
         UIManager.put("TextArea.background", Color.WHITE);
         UIManager.put("Label.background", Color.WHITE);
 
+
+        buttonSupport.setBorderPainted(false);
+        buttonSupport.setContentAreaFilled(false);
+        buttonSupport.setFocusPainted(false);
+        buttonSupport.setText(""); // Убираем текст, если он есть
+
+
+
         ButtonEnter.addActionListener(e -> {
             System.out.println("[ENTER] Нажата кнопка входа");
             authenticate();
         });
+        buttonSupport.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                parent.showSupport();
+
+                dispose();
+            }
+        });
     }
     private void authenticate() {
 
-//        //TODO:Удалить заглушку
-//        dispose(); // Закрываем диалог входа
-//        openMainFrame(); // Открываем главное окн
-//        return
-//        //////////////////////////////////////////
 
 
 

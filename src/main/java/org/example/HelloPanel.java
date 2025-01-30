@@ -18,6 +18,11 @@ public class HelloPanel extends JPanel{
         this.parent = parent;
         add(mainPanel); // Добавляем панель из дизайнера
         mainPanel.setPreferredSize(new Dimension(1920, 1080));
+        buttonHelper.setBorderPainted(false);
+        buttonHelper.setContentAreaFilled(false);
+        buttonHelper.setFocusPainted(false);
+        buttonHelper.setText(""); // Убираем текст, если он есть
+
 
         buttonHelper.addActionListener(new ActionListener() {
             @Override

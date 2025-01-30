@@ -95,6 +95,9 @@ public class MainFrame extends JFrame {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        dispose();
+        Hello helloForm = new Hello();
+        helloForm.setVisible(true);
     }
 
     public void showGeneral() {

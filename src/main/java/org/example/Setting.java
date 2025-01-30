@@ -43,7 +43,6 @@ public class Setting extends JPanel{
     private JButton buttonSupport;
     private JLabel LableName;
     private JButton buttonLogOut;
-    private JTextField textField3;
     private JButton buttonRemovePrinter;
     private JButton buttonGeneral;
     private JButton buttonHelper;
@@ -81,6 +80,40 @@ public class Setting extends JPanel{
         ButtonOpenPort.addActionListener(this::handleOpenPort);
         ButtonClosePort.addActionListener(this::handleClosePort);
 
+        buttonSupport.setBorderPainted(false);
+        buttonSupport.setContentAreaFilled(false);
+        buttonSupport.setFocusPainted(false);
+        buttonSupport.setText(""); // Убираем текст, если он есть
+
+        buttonAdmin.setBorderPainted(false);
+        buttonAdmin.setContentAreaFilled(false);
+        buttonAdmin.setFocusPainted(false);
+        buttonAdmin.setText(""); // Убираем текст, если он есть
+
+        buttonHome.setBorderPainted(false);
+        buttonHome.setContentAreaFilled(false);
+        buttonHome.setFocusPainted(false);
+        buttonHome.setText(""); // Убираем текст, если он есть
+
+        buttonReport.setBorderPainted(false);
+        buttonReport.setContentAreaFilled(false);
+        buttonReport.setFocusPainted(false);
+        buttonReport.setText(""); // Убираем текст, если он есть
+
+        buttonPrinter.setBorderPainted(false);
+        buttonPrinter.setContentAreaFilled(false);
+        buttonPrinter.setFocusPainted(false);
+        buttonPrinter.setText(""); // Убираем текст, если он есть
+
+        buttonLogOut.setBorderPainted(false);
+        buttonLogOut.setContentAreaFilled(false);
+        buttonLogOut.setFocusPainted(false);
+        buttonLogOut.setText(""); // Убираем текст, если он есть
+
+        buttonSetting.setBorderPainted(false);
+        buttonSetting.setContentAreaFilled(false);
+        buttonSetting.setFocusPainted(false);
+        buttonSetting.setText(""); // Убираем текст, если он есть
 
         // Настройка COM-портов
         updateComPorts();
@@ -162,6 +195,24 @@ public class Setting extends JPanel{
                 savePrinters();
             }
         });
+        ethernetCheckBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setSelected(false);
+            }
+        });
+        COMPortCheckBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setSelected(true);
+
+            }
+        });
+    }
+
+    private void setSelected(boolean isSerial) {
+        COMPortCheckBox.setSelected(isSerial);
+        ethernetCheckBox.setSelected(!isSerial);
     }
 
     private void saveTemplate() {
@@ -577,7 +628,9 @@ public class Setting extends JPanel{
                 PrinterManager.openEthernetPort(ip, port);
             }
             updatePortStatus(true);
+            JOptionPane.showMessageDialog(this, "Порт успешно открыт!");
         } catch (Exception ex) {
+            updatePortStatus(false); // Добавьте эту строку
             showError("Ошибка открытия порта: " + ex.getMessage());
         }
     }

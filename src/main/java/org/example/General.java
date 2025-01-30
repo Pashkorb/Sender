@@ -89,6 +89,9 @@ public class General extends JPanel implements PrinterDataListener {
         add(mainPanel); // Добавляем панель из дизайнера
         LableName.setText(CurrentUser.getName());
 
+        PrinterManager.addDataListener(this); // Добавляем этот вызов
+
+
         buttonHome.addActionListener(e -> parent.showHome());
         buttonSetting.addActionListener(e -> parent.showSettings());
         buttonAdmin.addActionListener(e->parent.showAdmin());
@@ -105,8 +108,47 @@ public class General extends JPanel implements PrinterDataListener {
         ButtonSelectSample.addActionListener(e -> selectTemplate());
         mainPanel.setPreferredSize(new Dimension(1920, 1080));
 
+        buttonSupport.setBorderPainted(false);
+        buttonSupport.setContentAreaFilled(false);
+        buttonSupport.setFocusPainted(false);
+        buttonSupport.setText(""); // Убираем текст, если он есть
 
+        buttonAdmin.setBorderPainted(false);
+        buttonAdmin.setContentAreaFilled(false);
+        buttonAdmin.setFocusPainted(false);
+        buttonAdmin.setText(""); // Убираем текст, если он есть
+
+        buttonHome.setBorderPainted(false);
+        buttonHome.setContentAreaFilled(false);
+        buttonHome.setFocusPainted(false);
+        buttonHome.setText(""); // Убираем текст, если он есть
+
+        buttonReport.setBorderPainted(false);
+        buttonReport.setContentAreaFilled(false);
+        buttonReport.setFocusPainted(false);
+        buttonReport.setText(""); // Убираем текст, если он есть
+
+        buttonPrinter.setBorderPainted(false);
+        buttonPrinter.setContentAreaFilled(false);
+        buttonPrinter.setFocusPainted(false);
+        buttonPrinter.setText(""); // Убираем текст, если он есть
+
+        buttonLogOut.setBorderPainted(false);
+        buttonLogOut.setContentAreaFilled(false);
+        buttonLogOut.setFocusPainted(false);
+        buttonLogOut.setText(""); // Убираем текст, если он есть
+
+        buttonSetting.setBorderPainted(false);
+        buttonSetting.setContentAreaFilled(false);
+        buttonSetting.setFocusPainted(false);
+        buttonSetting.setText(""); // Убираем текст, если он есть
         // Добавляем обработчик для кнопки отправки данных
+
+        статусПринтераTextField.setEditable(false);
+        статусПринтераTextField.setOpaque(true);
+        статусПринтераTextField.setBorder(BorderFactory.createEmptyBorder(2, 5, 2, 5));
+        updatePrinterStatus(false); // Начальное состояние
+
         ButtonSendDataForPrinter.addActionListener(e -> {
             // Проверяем соединение с принтером
             if (!PrinterManager.isConnectionOpen()) {
@@ -184,7 +226,17 @@ public class General extends JPanel implements PrinterDataListener {
     }
 
 
-
+    private void updatePrinterStatus(boolean isConnected) {
+        SwingUtilities.invokeLater(() -> {
+            if (isConnected) {
+                статусПринтераTextField.setText(" Подключен ");
+                статусПринтераTextField.setBackground(new Color(0, 200, 0)); // Зеленый
+            } else {
+                статусПринтераTextField.setText(" Не подключен ");
+                статусПринтераTextField.setBackground(new Color(255, 80, 80)); // Красный
+            }
+        });
+    }
 
     private void logLogout() {
         try (Connection conn = DatabaseManager.getInstance().getConnection();
@@ -267,9 +319,16 @@ public class General extends JPanel implements PrinterDataListener {
 
     @Override
     public void onStatusUpdate(String status) {
-        SwingUtilities.invokeLater(() -> updateStatusLabel(status));
-    }
+        boolean connected = status.toLowerCase().contains("открыт")
+                || status.toLowerCase().contains("подключ")
+                || status.toLowerCase().contains("open")
+                || status.toLowerCase().contains("connected");
 
+        SwingUtilities.invokeLater(() -> {
+            статусПринтераTextField.setText(" " + status + " ");
+            updatePrinterStatus(connected);
+        });
+    }
     private void handlePrinterResponse(String data) {
         if (data.contains("08000")&&CheckBox_CountPrint.isSelected()) {
             remainingCopies--;

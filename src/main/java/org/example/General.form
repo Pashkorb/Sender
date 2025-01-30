@@ -166,6 +166,8 @@
                   <columns value="0"/>
                   <editable value="false"/>
                   <enabled value="false"/>
+                  <font size="28"/>
+                  <foreground color="-16777216"/>
                   <horizontalAlignment value="0"/>
                   <text value="Статус принтера"/>
                 </properties>
@@ -204,7 +206,9 @@
               </component>
               <component id="d4566" class="javax.swing.JCheckBox" binding="CheckBox_CountPrint">
                 <constraints>
-                  <grid row="2" column="0" row-span="1" col-span="4" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="2" column="0" row-span="1" col-span="4" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false">
+                    <minimum-size width="-1" height="50"/>
+                  </grid>
                 </constraints>
                 <properties>
                   <font size="37"/>

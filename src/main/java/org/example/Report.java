@@ -60,6 +60,42 @@ public class Report extends JPanel {
         loadPrintersReport();
         loadPrintReport();
         loadLoginReport();
+
+
+        buttonSupport.setBorderPainted(false);
+        buttonSupport.setContentAreaFilled(false);
+        buttonSupport.setFocusPainted(false);
+        buttonSupport.setText(""); // Убираем текст, если он есть
+
+        buttonAdmin.setBorderPainted(false);
+        buttonAdmin.setContentAreaFilled(false);
+        buttonAdmin.setFocusPainted(false);
+        buttonAdmin.setText(""); // Убираем текст, если он есть
+
+        buttonHome.setBorderPainted(false);
+        buttonHome.setContentAreaFilled(false);
+        buttonHome.setFocusPainted(false);
+        buttonHome.setText(""); // Убираем текст, если он есть
+
+        buttonReport.setBorderPainted(false);
+        buttonReport.setContentAreaFilled(false);
+        buttonReport.setFocusPainted(false);
+        buttonReport.setText(""); // Убираем текст, если он есть
+
+        buttonPrinter.setBorderPainted(false);
+        buttonPrinter.setContentAreaFilled(false);
+        buttonPrinter.setFocusPainted(false);
+        buttonPrinter.setText(""); // Убираем текст, если он есть
+
+        buttonLogOut.setBorderPainted(false);
+        buttonLogOut.setContentAreaFilled(false);
+        buttonLogOut.setFocusPainted(false);
+        buttonLogOut.setText(""); // Убираем текст, если он есть
+
+        buttonSetting.setBorderPainted(false);
+        buttonSetting.setContentAreaFilled(false);
+        buttonSetting.setFocusPainted(false);
+        buttonSetting.setText(""); // Убираем текст, если он есть
     }
     private void loadPrintersReport() {
         PrinterReportTableModel model = (PrinterReportTableModel) tablePrintersReport.getModel();
@@ -182,18 +218,3 @@ public class Report extends JPanel {
 
 
 
-//
-//        button1.setBorderPainted(false);
-//                button1.setContentAreaFilled(false);
-//                button1.setFocusPainted(false);
-//                button1.setText(""); // Убираем текст, если он есть
-//
-//                button2.setBorderPainted(false);
-//                button2.setContentAreaFilled(false);
-//                button2.setFocusPainted(false);
-//                button2.setText("");
-//
-//                button3.setBorderPainted(false);
-//                button3.setContentAreaFilled(false);
-//                button3.setFocusPainted(false);
-//                button3.setText("");

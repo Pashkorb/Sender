@@ -140,6 +140,9 @@ public class PrinterManager {
             }
             ethernetReadThread = null;
         }
+
+        notifyStatus("Соединение закрыто");
+
     }
 
     // Отправка данных

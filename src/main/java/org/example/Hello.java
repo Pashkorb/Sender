@@ -42,7 +42,15 @@ public class Hello extends JFrame{
         supportPanel=new Support(this);
         helloPanel=new HelloPanel(this);
 
+        buttonHelper.setBorderPainted(false);
+        buttonHelper.setContentAreaFilled(false);
+        buttonHelper.setFocusPainted(false);
+        buttonHelper.setText(""); // Убираем текст, если он есть
 
+        buttonEnter.setBorderPainted(false);
+        buttonEnter.setContentAreaFilled(false);
+        buttonEnter.setFocusPainted(false);
+        buttonEnter.setText(""); // Убираем текст, если он есть
 
         // Настройка CardLayout
         mainPanel = new JPanel(new CardLayout());
@@ -103,7 +111,7 @@ public class Hello extends JFrame{
 
             System.out.println("[MAIN] Создание формы входа...");
             SwingUtilities.invokeLater(() -> {
-                Enter enterForm = new Enter(Date);
+                Enter enterForm = new Enter(Date,this);
                 enterForm.setVisible(true);
                 System.out.println("[MAIN] Форма входа закрыта");
             });
